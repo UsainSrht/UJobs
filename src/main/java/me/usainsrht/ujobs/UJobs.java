@@ -17,10 +17,22 @@ public final class UJobs extends JavaPlugin {
         if (getServer().getPluginManager().isPluginEnabled("Vault")) {
             economy = getServer().getServicesManager().getRegistration(Economy.class).getProvider();
         }
+
+        loadConfig();
     }
 
     @Override
     public void onDisable() {
+
+    }
+
+    public void reload() {
+        reloadConfig();
+
+        loadConfig();
+    }
+
+    public void loadConfig() {
 
     }
 
