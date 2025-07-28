@@ -1,0 +1,670 @@
+jobs:
+  hunter:
+    name: "<gradient:#FF0000:#A20000>Avcılık"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: RED
+    icon: NETHERITE_SWORD
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      kill:
+        zombie:
+          exp: 2
+          money: 0.1
+        skeleton:
+          exp: 2
+          money: 0.1
+        spider:
+          exp: 2
+          money: 0.1
+        creeper:
+          exp: 2
+          money: 0.1
+        cave_spider:
+          exp: 2.1
+          money: 0.12
+        husk:
+          exp: 2.05
+          money: 0.11
+        stray:
+          exp: 2.2
+          money: 0.15
+        drowned:
+          exp: 2.1
+          money: 0.13
+        enderman:
+          exp: 2.5
+          money: 0.15
+        blaze:
+          exp: 2.5
+          money: 0.15
+        elder_guardian:
+          exp: 20
+          money: 5
+        endermite:
+          exp: 3
+          money: 0.3
+        evoker:
+          exp: 5
+          money: 1
+        guardian:
+          exp: 2.3
+          money: 0.17
+        vindicator:
+          exp: 2.9
+          money: 0.14
+        piglin:
+          exp: 2.2
+          money: 0.12
+        piglin_brute:
+          exp: 10
+          money: 7
+        pillager:
+          exp: 2.1
+          money: 0.11
+        ravager:
+          exp: 5
+          money: 2.5
+        silverfish:
+          exp: 1
+          money: 0.01
+        vex:
+          exp: 2
+          money: 0.1
+        warden:
+          exp: 100
+          money: 10
+        witch:
+          exp: 3
+          money: 0.3
+        wither:
+          exp: 50
+          money: 5
+        wither_skeleton:
+          exp: 2.5
+          money: 0.15
+        zoglin:
+          exp: 2.3
+          money: 0.13
+        zombie_villager:
+          exp: 2.3
+          money: 0.13
+        ender_dragon:
+          exp: 250
+          money: 25
+        pig:
+          exp: 1
+          money: 0.01
+        chicken:
+          exp: 1
+          money: 0.01
+        sheep:
+          exp: 1
+          money: 0.01
+        cow:
+          exp: 1
+          money: 0.01
+        cod:
+          exp: 2.2
+          money: 0.18
+        salmon:
+          exp: 2.2
+          money: 0.18
+        pufferfish:
+          exp: 2.9
+          money: 0.29
+        tropical_fish:
+          exp: 2.7
+          money: 0.27
+        horse:
+          exp: 2.1
+          money: 0.12
+        donkey:
+          exp: 2.1
+          money: 0.12
+        wolf:
+          exp: 2.4
+          money: 0.24
+        fox:
+          exp: 4
+          money: 0.4
+        rabbit:
+          exp: 3
+          money: 0.35
+        iron_golem:
+          exp: 5
+          money: 0.5
+        goat:
+          exp: 2.3
+          money: 0.3
+        llama:
+          exp: 2.1
+          money: 0.21
+        squid:
+          exp: 2.7
+          money: 0.27
+        glow_squid:
+          exp: 2.8
+          money: 0.28
+        mushroom_cow:
+          exp: 5
+          money: 0.5
+        strider:
+          exp: 2.5
+          money: 0.15
+  miner:
+    name: "<gradient:#9B9B9B:#646464>Madencilik"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: WHITE
+    icon: NETHERITE_PICKAXE
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      break:
+        stone:
+          exp: 0.1
+          money: 0.01
+        deepslate:
+          exp: 0.11
+          money: 0.011
+        coal_ore:
+          exp: 1
+          money: 0.1
+        deepslate_coal_ore:
+          exp: 1.1
+          money: 0.11
+        iron_ore:
+          exp: 1.1
+          money: 0.11
+        deepslate_iron_ore:
+          exp: 1.2
+          money: 0.12
+        copper_ore:
+          exp: 1.2
+          money: 0.12
+        deepslate_copper_ore:
+          exp: 1.3
+          money: 0.13
+        gold_ore:
+          exp: 1.4
+          money: 0.14
+        deepslate_gold_ore:
+          exp: 1.5
+          money: 0.15
+        redstone_ore:
+          exp: 1.3
+          money: 0.13
+        deepslate_redstone_ore:
+          exp: 1.4
+          money: 0.14
+        emerald_ore:
+          exp: 1.6
+          money: 0.16
+        deepslate_emerald_ore:
+          exp: 1.7
+          money: 0.17
+        lapis_ore:
+          exp: 1.5
+          money: 0.15
+        deepslate_lapis_ore:
+          exp: 1.6
+          money: 0.16
+        diamond_ore:
+          exp: 1.7
+          money: 0.17
+        deepslate_diamond_ore:
+          exp: 1.8
+          money: 0.18
+        nether_gold_ore:
+          exp: 1
+          money: 0.1
+        nether_quartz_ore:
+          exp: 1.1
+          money: 0.11
+        netherrack:
+          exp: 0.08
+          money: 0.008
+        gilded_blackstone:
+          exp: 1.2
+          money: 0.12
+        blackstone:
+          exp: 0.1
+          money: 0.01
+        basalt:
+          exp: 0.1
+          money: 0.01
+        end_stone:
+          exp: 0.1
+          money: 0.01
+        diorite:
+          exp: 0.1
+          money: 0.01
+        andesite:
+          exp: 0.1
+          money: 0.01
+        granite:
+          exp: 0.1
+          money: 0.01
+        sandstone:
+          exp: 0.1
+          money: 0.01
+  farmer:
+    name: "<gradient:#FFD500:#FF9B00>Çiftçilik"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: YELLOW
+    icon: NETHERITE_HOE
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      break:
+        wheat7:
+          exp: 1
+          money: 0.01
+        potatoes7:
+          exp: 1
+          money: 0.01
+        carrots7:
+          exp: 1
+          money: 0.01
+        beetroots3:
+          exp: 1.1
+          money: 0.011
+        melon:
+          exp: 1
+          money: 0.01
+  husbandry:
+    name: "<gradient:#FF00BD:#AA4B00>Hayvancılık"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: PINK
+    icon: LEAD
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      breed:
+        pig:
+          exp: 1
+          money: 0.01
+      tame:
+        wolf:
+          exp: 1
+          money: 0.01
+  fisher:
+    name: "<gradient:#00D8FF:#0A75C8>Balıkçılık"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: BLUE
+    icon: FISHING_ROD
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      fish:
+        cod:
+          exp: 1
+          money: 1
+        salmon:
+          exp: 1
+          money: 1
+        tropical_fish:
+          exp: 3
+          money: 3
+        pufferfish:
+          exp: 2.5
+          money: 2.5
+  witcher:
+    name: "<gradient:#FF00FB:#9B00FF>Büyücülük"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: PURPLE
+    icon: ENCHANTING_TABLE
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      enchant:
+        1:
+          exp: 1
+          money: 1
+        2:
+          exp: 2
+          money: 2
+        3:
+          exp: 3
+          money: 3
+      anvil_enchant:
+        enchanted_book:
+          exp: 1.5
+          money: 1.5
+  lumberjack:
+    name: "<gradient:#CB7800:#00B503>Odunculuk"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: GREEN
+    icon: NETHERITE_AXE
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      break:
+        oak_log:
+          exp: 1
+          money: 0.1
+        birch_log:
+          exp: 1
+          money: 0.1
+        spruce_log:
+          exp: 1
+          money: 0.1
+        dark_oak_log:
+          exp: 1
+          money: 0.1
+        jungle_log:
+          exp: 1
+          money: 0.1
+        acacia_log:
+          exp: 1
+          money: 0.1
+        mangrove_log:
+          exp: 1
+          money: 0.1
+        mangrove_roots:
+          exp: 0.7
+          money: 0.07
+        warped_stem:
+          exp: 1.5
+          money: 0.15
+        crimson_stem:
+          exp: 1.5
+          money: 0.15
+
+  digger:
+    name: "<gradient:#69A5E8:#AE69E8>Amelelik"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: BLUE
+    icon: NETHERITE_SHOVEL
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      break:
+        sand:
+          exp: 1
+          money: 0.01
+        red_sand:
+          exp: 1.1
+          money: 0.011
+        clay:
+          exp: 2
+          money: 0.02
+        mud:
+          exp: 1.5
+          money: 0.015
+        gravel:
+          exp: 1.25
+          money: 0.0125
+        mycelium:
+          exp: 2
+          money: 0.02
+        podzol:
+          exp: 1.1
+          money: 0.011
+        coarse_dirt:
+          exp: 1.1
+          money: 0.011
+        dirt:
+          exp: 1
+          money: 0.01
+        grass_block:
+          exp: 1
+          money: 0.01
+        soul_sand:
+          exp: 2
+          money: 0.02
+  gladiator:
+    name: "<gradient:#FF0000:#FFFF00>Gladyatörlük"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: RED
+    icon: NETHERITE_HELMET
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      kill:
+        player:
+          exp: 1
+          money: 0.01
+  guardian:
+    name: "<gradient:#1FFF00:#769072>Muhafızlık"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: GREEN
+    icon: SHIELD
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      raid:
+        win:
+          exp: 10
+          money: 0.1
+        wave:
+          exp: 1
+          money: 0.01
+  producer:
+    name: "<gradient:#A26238:#AF8D5B>Üretkenlik"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: WHITE
+    icon: CRAFTING_TABLE
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      craft:
+        piston:
+          exp: 1
+          money: 0.1
+        sticky_piston:
+          exp: 0.1
+          money: 0.01
+        lectern:
+          exp: 1
+          money: 0.1
+        redstone_lamp:
+          exp: 1
+          money: 0.1
+        tnt:
+          exp: 0.5
+          money: 0.05
+        dispenser:
+          exp: 0.5
+          money: 0.05
+        dropper:
+          exp: 0.4
+          money: 0.04
+        target:
+          exp: 1
+          money: 0.1
+        repeater:
+          exp: 1.5
+          money: 0.15
+        comparator:
+          exp: 3
+          money: 0.3
+        daylight_detector:
+          exp: 5
+          money: 0.5
+        note_block:
+          exp: 0.5
+          money: 0.05
+        observer:
+          exp: 1
+          money: 0.1
+        minecart:
+          exp: 0.2
+          money: 0.02
+  trader:
+    name: "<gradient:#0CFF00:#F7FF00>Tüccarlık"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: BLUE
+    icon: EMERALD
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      trade:
+        emerald:
+          exp: 1
+          money: 0.1
+  traveler:
+    name: "<gradient:#00AAFF:#00FF13>Gezginlik"
+    bossbar:
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      overlay: NOTCHED_10
+      color: BLUE
+    icon: SPYGLASS
+    levelup_sound: entity.player.levelup
+    level_equation: "<nextlevel>*<nextlevel>*5"
+    actions:
+      lootgenerate:
+        desert_pyramid:
+          exp: 12.5
+          money: 10
+        abandoned_mineshaft:
+          exp: 10
+          money: 5
+        ancient_city:
+          exp: 50
+          money: 50
+        ancient_city_ice_box:
+          exp: 50
+          money: 50
+        bastion_bridge:
+          exp: 25
+          money: 22
+        bastion_other:
+          exp: 25
+          money: 22
+        bastion_treasure:
+          exp: 50
+          money: 50
+        buried_treasure:
+          exp: 100
+          money: 100
+        end_city_treasure:
+          exp: 20
+          money: 17
+        igloo_chest:
+          exp: 150
+          money: 125
+        jungle_temple:
+          exp: 75
+          money: 60
+        pillager_outpost:
+          exp: 20
+          money: 16
+        ruined_portal:
+          exp: 10
+          money: 7
+        shipwreck_map:
+          exp: 7
+          money: 5
+        shipwreck_supply:
+          exp: 7
+          money: 5
+        shipwreck_treasure:
+          exp: 11
+          money: 9
+        simple_dungeon:
+          exp: 18
+          money: 15
+        stronghold_corridor:
+          exp: 40
+          money: 34
+        stronghold_crossing:
+          exp: 40
+          money: 34
+        stronghold_library:
+          exp: 40
+          money: 34
+        underwater_ruin_big:
+          exp: 10
+          money: 7
+        underwater_ruin_small:
+          exp: 10
+          money: 7
+        village_armorer:
+          exp: 5
+          money: 1.5
+        village_butcher:
+          exp: 5
+          money: 1.5
+        village_cartographer:
+          exp: 5
+          money: 1.5
+        village_desert_house:
+          exp: 5
+          money: 1.5
+        village_fisher:
+          exp: 5
+          money: 1.5
+        village_fletcher:
+          exp: 5
+          money: 1.5
+        village_mason:
+          exp: 5
+          money: 1.5
+        village_plains_house:
+          exp: 5
+          money: 1.5
+        village_savanna_house:
+          exp: 5
+          money: 1.5
+        village_shepherd:
+          exp: 5
+          money: 1.5
+        village_snowy_house:
+          exp: 5
+          money: 1.5
+        village_taiga_house:
+          exp: 5
+          money: 1.5
+        village_tannery:
+          exp: 5
+          money: 1.5
+        village_temple:
+          exp: 5
+          money: 1.5
+        village_toolsmith:
+          exp: 5
+          money: 1.5
+        village_weaponsmith:
+          exp: 5
+          money: 1.5
+        woodland_mansion:
+          exp: 5
+          money: 1.5

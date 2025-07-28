@@ -1,11 +1,40 @@
 name: UJobs
 version: '1.0.0'
-main: me.usainsrht.ujobs.UJobs
+main: me.usainsrht.ujobs.UJobsPlugin
 api-version: '1.21'
 authors: [ UsainSrht ]
+description: 'The job plugin.'
 dependencies:
   server:
     Vault:
       required: true
+      load: BEFORE
+      join-classpath: true
+
+    Citizens:
+      required: false
+      load: BEFORE
+      join-classpath: true
+    FancyNpcs:
+      required: false
+      load: BEFORE
+      join-classpath: true
+
+    FancyHolograms:
+      required: false
+      load: BEFORE
+      join-classpath: true
+    DecentHolograms:
+      required: false
+      load: BEFORE
+      join-classpath: true
+    HolographicDisplays:
+      required: false
+      load: BEFORE
+      join-classpath: true
+
+
+    UltimateTimber:
+      required: false
       load: BEFORE
       join-classpath: true
