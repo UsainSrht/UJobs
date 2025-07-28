@@ -15,17 +15,17 @@ public class ConfigManager {
     public ConfigManager(UJobsPlugin plugin) {
         this.plugin = plugin;
 
-        loadConfig();
+        loadConfigs();
     }
 
     public void reload() {
         plugin.reloadConfig();
         //reload jobs yml too
 
-        loadConfig();
+        loadConfigs();
     }
 
-    public void loadConfig() {
+    public void loadConfigs() {
         // Load config.yml
         plugin.saveDefaultConfig();
 

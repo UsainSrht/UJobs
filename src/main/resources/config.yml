@@ -67,19 +67,20 @@ gui:
       - " <gray>Sıralamaya gitmek için <primary>SOL <gray>tıkla. "
       - " <gray>Tecrübelere gitmek için <primary>SAĞ <gray>tıkla. "
 
-sounds:
-  page_turn: item.book.page_turn
-  leaderboard:
-    take_lead: entity.ravager.celebrate
-    get_in_top_10: entity.vindicator.celebrate
-    take_someones_position: entity.pillager.celebrate
-
 messages:
+  page_turn:
+    sound: item.book.page_turn
   leaderboard:
-    take_lead: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold>1.</bold><gray>'liği <opponentdisplayname> <gray>aldı."
-    get_in_top_10: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp ilk <secondary><bold>10</bold><gray>'a girdi."
+    take_lead:
+      chat: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold>1.</bold><gray>'liği <opponentdisplayname> <gray>aldı."
+      sound: entity.ravager.celebrate
+    get_in_top_10:
+      chat: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp ilk <secondary><bold>10</bold><gray>'a girdi."
+      sound: entity.vindicator.celebrate
     your_position_taken: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold><position>.</bold> <gray>sırayı senden aldı."
-    take_someones_position: "<opponentdisplayname> <job> <gray>yeteneğinde geçerek <secondary><bold><position>.</bold> <gray>sen oldun."
+    take_someones_position:
+      chat: "<opponentdisplayname> <job> <gray>yeteneğinde geçerek <secondary><bold><position>.</bold> <gray>sen oldun."
+      sound: entity.pillager.celebrate
 
 symbols:
   money: pp

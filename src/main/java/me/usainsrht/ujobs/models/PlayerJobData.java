@@ -1,19 +1,19 @@
 package me.usainsrht.ujobs.models;
 
-import org.bukkit.configuration.ConfigurationSection;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Getter
 public class PlayerJobData {
-    private final UUID playerId;
-    private final String playerName;
+    private final UUID uuid;
     private final Map<String, JobStats> jobStats;
 
-    public PlayerJobData(UUID playerId, String playerName) {
-        this.playerId = playerId;
-        this.playerName = playerName;
+    public PlayerJobData(UUID playerId) {
+        this.uuid = playerId;
         this.jobStats = new HashMap<>();
     }
 
@@ -44,46 +44,8 @@ public class PlayerJobData {
         stats.setLevel(stats.getLevel() + 1);
     }
 
-    public void save(ConfigurationSection section) {
-        section.set("name", playerName);
-
-        ConfigurationSection jobsSection = section.createSection("jobs");
-        for (Map.Entry<String, JobStats> entry : jobStats.entrySet()) {
-            ConfigurationSection jobSection = jobsSection.createSection(entry.getKey());
-            JobStats stats = entry.getValue();
-            jobSection.set("level", stats.getLevel());
-            jobSection.set("exp", stats.getExp());
-            jobSection.set("totalMoney", stats.getTotalMoney());
-        }
-    }
-
-    public static PlayerJobData load(UUID playerId, ConfigurationSection section) {
-        String playerName = section.getString("name", "Unknown");
-        PlayerJobData data = new PlayerJobData(playerId, playerName);
-
-        ConfigurationSection jobsSection = section.getConfigurationSection("jobs");
-        if (jobsSection != null) {
-            for (String jobId : jobsSection.getKeys(false)) {
-                ConfigurationSection jobSection = jobsSection.getConfigurationSection(jobId);
-                if (jobSection != null) {
-                    JobStats stats = new JobStats(
-                            jobSection.getInt("level", 0),
-                            jobSection.getLong("exp", 0),
-                            jobSection.getDouble("totalMoney", 0.0)
-                    );
-                    data.setJobStats(jobId, stats);
-                }
-            }
-        }
-
-        return data;
-    }
-
-    // Getters
-    public UUID getPlayerId() { return playerId; }
-    public String getPlayerName() { return playerName; }
-    public Map<String, JobStats> getAllJobStats() { return new HashMap<>(jobStats); }
-
+    @Getter
+    @Setter
     public static class JobStats {
         private int level;
         private long exp;
@@ -98,15 +60,5 @@ public class PlayerJobData {
             this.exp = exp;
             this.totalMoney = totalMoney;
         }
-
-        // Getters and setters
-        public int getLevel() { return level; }
-        public void setLevel(int level) { this.level = level; }
-
-        public long getExp() { return exp; }
-        public void setExp(long exp) { this.exp = exp; }
-
-        public double getTotalMoney() { return totalMoney; }
-        public void setTotalMoney(double totalMoney) { this.totalMoney = totalMoney; }
     }
 }

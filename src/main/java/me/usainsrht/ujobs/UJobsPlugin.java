@@ -1,9 +1,21 @@
 package me.usainsrht.ujobs;
 
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
+import me.usainsrht.ujobs.commands.MainCommand;
+import me.usainsrht.ujobs.listeners.InventoryListener;
+import me.usainsrht.ujobs.listeners.JoinListener;
+import me.usainsrht.ujobs.listeners.QuitListener;
 import me.usainsrht.ujobs.managers.*;
+import me.usainsrht.ujobs.storage.PDCStorage;
+import me.usainsrht.ujobs.storage.Storage;
+import me.usainsrht.ujobs.yaml.YamlCommand;
+import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -16,11 +28,11 @@ public final class UJobsPlugin extends JavaPlugin {
     public static UJobsPlugin instance;
     private MiniMessage miniMessage;
     private Economy economy;
+    private Storage storage;
 
     // Managers
     private ConfigManager configManager;
     private JobManager jobManager;
-    private JobDataManager dataManager;
     private LeaderboardManager leaderboardManager;
     private JobGUIManager guiManager;
     private BossBarManager bossBarManager;
@@ -40,6 +52,9 @@ public final class UJobsPlugin extends JavaPlugin {
             return;
         }
 
+        // Setup storage
+        this.storage = new PDCStorage(this);
+
         // Initialize managers
         initializeManagers();
 
@@ -56,8 +71,8 @@ public final class UJobsPlugin extends JavaPlugin {
     public void onDisable() {
 
         // Save all data
-        if (dataManager != null) {
-            dataManager.saveAllData();
+        if (storage != null) {
+            storage.save();
         }
 
         // Cancel all boss bars
@@ -72,7 +87,6 @@ public final class UJobsPlugin extends JavaPlugin {
         try {
             this.configManager = new ConfigManager(this);
             this.jobManager = new JobManager(this);
-            this.dataManager = new JobDataManager(this);
             this.leaderboardManager = new LeaderboardManager(this);
             this.bossBarManager = new BossBarManager(this);
             this.guiManager = new JobGUIManager(this);
@@ -91,9 +105,24 @@ public final class UJobsPlugin extends JavaPlugin {
 
     private void registerEventsAndCommands() {
         // Register event listeners
-        getServer().getPluginManager().registerEvents(new JobEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+        getServer().getPluginManager().registerEvents(new QuitListener(this), this);
 
 
+
+        LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
+        manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            final Commands commands = event.registrar();
+            YamlCommand mainCommand = YamlCommand.builder()
+                    .name(getConfig().getString("command.name", "ujobs"))
+                    .description(getConfig().getString("command.description", "UJobs main command"))
+                    .aliases(getConfig().getStringList("command.aliases"))
+                    .permission(getConfig().getString("command.permission", "ujobs.command.main"))
+                    .permissionMessage(new YamlMessage(getConfig().get("command.permission_message")))
+                    .build();
+            commands.register(getPluginMeta(), MainCommand.create(this, mainCommand), mainCommand.getDescription(), mainCommand.getAliases());
+        });
     }
 
     private boolean setupEconomy() {
@@ -112,7 +141,7 @@ public final class UJobsPlugin extends JavaPlugin {
         new BukkitRunnable() {
             @Override
             public void run() {
-                leaderboardManager.calculateLeaderboard();
+                //leaderboardManager.calculateLeaderboard();
             }
         }.runTaskTimerAsynchronously(this, 20L * 60 * 2, 20L * 60 * 60); // Every hour after 2 minute delay
     }
