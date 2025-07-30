@@ -3,7 +3,7 @@ package me.usainsrht.ujobs.yaml;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import me.usainsrht.tiktokparkour.TikTokParkour;
+import me.usainsrht.ujobs.UJobsPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -32,11 +32,11 @@ public class YamlTitle  {
     private static final long MILLIS_IN_ONE_SECOND = 20;
 
     public Title parse() {
-        return parse(TikTokParkour.miniMessage);
+        return parse(UJobsPlugin.instance.getMiniMessage());
     }
 
     public Title parse(TagResolver... placeholders) {
-        return parse(TikTokParkour.miniMessage, placeholders);
+        return parse(UJobsPlugin.instance.getMiniMessage(), placeholders);
     }
 
     public Title parse(MiniMessage miniMessage, TagResolver... placeholders) {

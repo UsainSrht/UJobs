@@ -36,7 +36,7 @@ public class BossBarManager {
         }
 
         // Show new boss bar
-        plugin.getAdventure().player(player).showBossBar(bossBar);
+        player.showBossBar(bossBar);
 
         // Create hide task
         BukkitTask hideTask = new BukkitRunnable() {
@@ -55,7 +55,7 @@ public class BossBarManager {
     }
 
     public void hideBossBar(Player player, BossBar bossBar) {
-        plugin.getAdventure().player(player).hideBossBar(bossBar);
+        player.hideBossBar(bossBar);
     }
 
     public void hideBossBar(Player player, String key) {
@@ -118,7 +118,7 @@ public class BossBarManager {
                 hideBossBar(player, existing.bossBar);
 
                 // Show new boss bar
-                plugin.getAdventure().player(player).showBossBar(newBossBar);
+                player.showBossBar(newBossBar);
 
                 // Update stored boss bar (keep same task)
                 bossBars.put(key, new BossBarData(newBossBar, existing.task));

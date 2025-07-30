@@ -8,7 +8,10 @@ import me.usainsrht.ujobs.commands.MainCommand;
 import me.usainsrht.ujobs.listeners.InventoryListener;
 import me.usainsrht.ujobs.listeners.JoinListener;
 import me.usainsrht.ujobs.listeners.QuitListener;
+import me.usainsrht.ujobs.listeners.job_actions.*;
 import me.usainsrht.ujobs.managers.*;
+import me.usainsrht.ujobs.models.BuiltInActions;
+import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.storage.PDCStorage;
 import me.usainsrht.ujobs.storage.Storage;
 import me.usainsrht.ujobs.yaml.YamlCommand;
@@ -109,7 +112,43 @@ public final class UJobsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new QuitListener(this), this);
 
-
+        // job listeners
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.BREAK)) {
+            getServer().getPluginManager().registerEvents(new BreakListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.PLACE)) {
+            getServer().getPluginManager().registerEvents(new PlaceListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.TAME)) {
+            getServer().getPluginManager().registerEvents(new TameListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.BREED)) {
+            getServer().getPluginManager().registerEvents(new BreedListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.KILL)) {
+            getServer().getPluginManager().registerEvents(new KillListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.ENCHANT)) {
+            getServer().getPluginManager().registerEvents(new EnchantListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.FISH)) {
+            getServer().getPluginManager().registerEvents(new FishListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.RAID)) {
+            getServer().getPluginManager().registerEvents(new RaidListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.GENERATE_LOOT)) {
+            getServer().getPluginManager().registerEvents(new LootGenerateListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.TRADE)) {
+            getServer().getPluginManager().registerEvents(new TradeListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.ANVIL_ENCHANT)) {
+            getServer().getPluginManager().registerEvents(new AnvilEnchantListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.CRAFT)) {
+            getServer().getPluginManager().registerEvents(new CraftListener(jobManager), this);
+        }
 
         LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
         manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {

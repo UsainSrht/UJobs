@@ -20,10 +20,7 @@ public class JoinListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
-        plugin.getStorage().load(uuid).thenAcceptAsync(activeContract -> {
-            if (activeContract == null || !player.isOnline()) return;
-            activeContract.getContract().start(player, activeContract);
-        });
+        plugin.getStorage().load(uuid);
     }
 
 }

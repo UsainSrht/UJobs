@@ -2,12 +2,17 @@ package me.usainsrht.ujobs.managers;
 
 import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
+import me.usainsrht.ujobs.models.Action;
+import me.usainsrht.ujobs.models.BuiltInActions;
 import me.usainsrht.ujobs.models.Job;
+import me.usainsrht.ujobs.models.PlayerJobData;
+import me.usainsrht.ujobs.utils.JobExpUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 
@@ -15,17 +20,17 @@ import java.util.*;
 public class JobManager {
     private final UJobsPlugin plugin;
     private final Map<String, Job> jobs;
-    private final List<String> jobOrder; // To maintain order from config
+    private final Map<Action, Set<Job>> actionJobMap;
 
     public JobManager(UJobsPlugin plugin) {
         this.plugin = plugin;
         this.jobs = new LinkedHashMap<>();
-        this.jobOrder = new ArrayList<>();
+        this.actionJobMap = new HashMap<>();
     }
 
     public void loadJobs() {
         jobs.clear();
-        jobOrder.clear();
+        actionJobMap.clear();
 
         ConfigurationSection jobsSection = plugin.getConfigManager().getJobsConfig()
                 .getConfigurationSection("jobs");
@@ -41,7 +46,6 @@ public class JobManager {
                 Job job = loadJob(jobId, jobsSection.getConfigurationSection(jobId));
                 if (job != null) {
                     jobs.put(jobId, job);
-                    jobOrder.add(jobId);
                     jobCount++;
                 }
             } catch (Exception e) {
@@ -126,18 +130,32 @@ public class JobManager {
     }
 
     private void loadJobActions(Job job, ConfigurationSection actionsSection) {
-        for (String actionType : actionsSection.getKeys(false)) {
-            ConfigurationSection actionSection = actionsSection.getConfigurationSection(actionType);
+        for (String actionName : actionsSection.getKeys(false)) {
+            Action action = BuiltInActions.get(actionName);
+            if (action == null) return;
+            ConfigurationSection actionSection = actionsSection.getConfigurationSection(actionName);
             if (actionSection != null) {
                 for (String value : actionSection.getKeys(false)) {
                     ConfigurationSection rewardSection = actionSection.getConfigurationSection(value);
                     if (rewardSection != null) {
                         double exp = rewardSection.getDouble("exp", 0.0);
                         double money = rewardSection.getDouble("money", 0.0);
-                        job.addAction(actionType, value, new Job.ActionReward(exp, money));
+                        job.addAction(action, value, new Job.ActionReward(exp, money));
+                        actionJobMap.computeIfAbsent(action, k -> new HashSet<>()).add(job);
                     }
                 }
             }
         }
+    }
+
+    public void processAction(Player player, Action action, String value, Job job, int amount) {
+        PlayerJobData playerJobData = plugin.getStorage().getCached(player.getUniqueId());
+        if (playerJobData == null) return; //job data has to be loaded at this point
+
+        Job.ActionReward reward = job.getActionReward(action, value);
+        if (reward == null) return;
+
+        JobExpUtils.processJobExp(player, job, reward, amount);
+
     }
 }

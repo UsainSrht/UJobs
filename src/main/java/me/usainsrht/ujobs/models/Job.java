@@ -18,7 +18,7 @@ public class Job {
     private final String levelEquation;
     private final Sound levelUpSound;
     private final BossBarConfig bossBarConfig;
-    private final Map<String, Map<String, ActionReward>> actions;
+    private final Map<Action, Map<String, ActionReward>> actions;
 
     public Job(String id, Component name, Material icon, String levelEquation,
                Sound levelUpSound, BossBarConfig bossBarConfig) {
@@ -31,22 +31,18 @@ public class Job {
         this.actions = new HashMap<>();
     }
 
-    public void addAction(String actionType, String value, ActionReward reward) {
-        actions.computeIfAbsent(actionType, k -> new HashMap<>()).put(value, reward);
+    public void addAction(Action action, String value, ActionReward reward) {
+        actions.computeIfAbsent(action, k -> new HashMap<>()).put(value, reward);
     }
 
-    public ActionReward getActionReward(String actionType, String value) {
-        Map<String, ActionReward> actionMap = actions.get(actionType);
+    public ActionReward getActionReward(Action action, String value) {
+        Map<String, ActionReward> actionMap = actions.get(action);
         return actionMap != null ? actionMap.get(value) : null;
-    }
-
-    public boolean hasAction(String actionType, String value) {
-        return getActionReward(actionType, value) != null;
     }
 
     public long calculateExpForLevel(int level) {
         String equation = levelEquation.replace("<level>", String.valueOf(level))
-                .replace("<nextlevel>", String.valueOf(level + 1));
+                .replace("<next_level>", String.valueOf(level + 1));
 
         // Simple equation evaluator for basic math
         try {

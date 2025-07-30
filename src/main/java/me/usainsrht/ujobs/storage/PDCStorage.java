@@ -116,11 +116,14 @@ public class PDCStorage implements Storage {
             player.getScheduler().run(plugin, task -> {
                 //success
                 PersistentDataContainer pdc = player.getPersistentDataContainer();
+                PlayerJobData playerJobData;
                 if (pdc.has(TAG_JOBS_DATA)) {
-                    PlayerJobData playerJobData = deserialize(uuid, pdc.get(TAG_JOBS_DATA, PersistentDataType.TAG_CONTAINER));
-                    cache.put(uuid, playerJobData);
-                    future.complete(playerJobData);
+                    playerJobData = deserialize(uuid, pdc.get(TAG_JOBS_DATA, PersistentDataType.TAG_CONTAINER));
+                } else {
+                    playerJobData = new PlayerJobData(uuid);
                 }
+                cache.put(uuid, playerJobData);
+                future.complete(playerJobData);
             }, () -> {
                 //fail
                 plugin.getLogger().warning("Can't load data of " + uuid + "! storage: PDC");

@@ -57,17 +57,28 @@ gui:
   jobitem:
     name: "<job>"
     lore:
-      - " <gradient:#6D6666:#938B8B:#777676><exp>/<nextexp> "
-      - " <primary><level> <progress> <secondary><nextlevel> "
+      - " <gradient:#6D6666:#938B8B:#777676><exp>/<next_exp> "
+      - " <primary><level> <progress> <secondary><next_level> "
       - ""
       - " <job> <gray>yeteneğinde: "
       - "  <gray>sıralamada <primary><position><gray>. sıradasın. "
-      - "  <gray>bugüne kadar <primary><totalmoney><moneysymbol> <gray>kazanmışsın."
+      - "  <gray>bugüne kadar <primary><total_money><money_symbol> <gray>kazanmışsın."
       - ""
       - " <gray>Sıralamaya gitmek için <primary>SOL <gray>tıkla. "
       - " <gray>Tecrübelere gitmek için <primary>SAĞ <gray>tıkla. "
 
+command:
+  name: "jobs"
+  description: "main command for Jobs"
+  aliases:
+    - "job"
+    - "ujob"
+    - "ujobs"
+    - "skill"
+    - "skills"
+
 messages:
+  reload: "<green>reloaded!"
   page_turn:
     sound: item.book.page_turn
   leaderboard:

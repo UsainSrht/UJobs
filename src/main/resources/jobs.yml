@@ -2,13 +2,13 @@ jobs:
   hunter:
     name: "<gradient:#FF0000:#A20000>Avcılık"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_SWORD
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       kill:
         zombie:
@@ -158,13 +158,13 @@ jobs:
   miner:
     name: "<gradient:#9B9B9B:#646464>Madencilik"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: WHITE
     icon: NETHERITE_PICKAXE
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
         stone:
@@ -257,13 +257,13 @@ jobs:
   farmer:
     name: "<gradient:#FFD500:#FF9B00>Çiftçilik"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: YELLOW
     icon: NETHERITE_HOE
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
         wheat7:
@@ -284,13 +284,13 @@ jobs:
   husbandry:
     name: "<gradient:#FF00BD:#AA4B00>Hayvancılık"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: PINK
     icon: LEAD
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       breed:
         pig:
@@ -303,13 +303,13 @@ jobs:
   fisher:
     name: "<gradient:#00D8FF:#0A75C8>Balıkçılık"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: BLUE
     icon: FISHING_ROD
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       fish:
         cod:
@@ -327,13 +327,13 @@ jobs:
   witcher:
     name: "<gradient:#FF00FB:#9B00FF>Büyücülük"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: PURPLE
     icon: ENCHANTING_TABLE
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       enchant:
         1:
@@ -352,13 +352,13 @@ jobs:
   lumberjack:
     name: "<gradient:#CB7800:#00B503>Odunculuk"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: GREEN
     icon: NETHERITE_AXE
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
         oak_log:
@@ -395,13 +395,13 @@ jobs:
   digger:
     name: "<gradient:#69A5E8:#AE69E8>Amelelik"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: BLUE
     icon: NETHERITE_SHOVEL
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
         sand:
@@ -440,13 +440,13 @@ jobs:
   gladiator:
     name: "<gradient:#FF0000:#FFFF00>Gladyatörlük"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_HELMET
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       kill:
         player:
@@ -455,13 +455,13 @@ jobs:
   guardian:
     name: "<gradient:#1FFF00:#769072>Muhafızlık"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: GREEN
     icon: SHIELD
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       raid:
         win:
@@ -473,13 +473,13 @@ jobs:
   producer:
     name: "<gradient:#A26238:#AF8D5B>Üretkenlik"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: WHITE
     icon: CRAFTING_TABLE
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       craft:
         piston:
@@ -527,13 +527,13 @@ jobs:
   trader:
     name: "<gradient:#0CFF00:#F7FF00>Tüccarlık"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: BLUE
     icon: EMERALD
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
       trade:
         emerald:
@@ -542,15 +542,15 @@ jobs:
   traveler:
     name: "<gradient:#00AAFF:#00FF13>Gezginlik"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>"
+      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<next_exp>"
       levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
       overlay: NOTCHED_10
       color: BLUE
     icon: SPYGLASS
     levelup_sound: entity.player.levelup
-    level_equation: "<nextlevel>*<nextlevel>*5"
+    level_equation: "<next_level>*<next_level>*5"
     actions:
-      lootgenerate:
+      generate_loot:
         desert_pyramid:
           exp: 12.5
           money: 10
