@@ -5,6 +5,7 @@ import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.PlayerJobData;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,13 +19,13 @@ public class JobExpUtils {
         PlayerJobData.JobStats stats = playerData.getJobStats(job.getId());
 
         // Calculate rewards
-        long expGain = (long) (reward.getExp() * amount);
+        double expGain = reward.getExp() * amount;
         double moneyGain = reward.getMoney() * amount;
 
         // Current stats
         int currentLevel = stats.getLevel();
-        long currentExp = stats.getExp();
-        long newExp = currentExp + expGain;
+        double currentExp = stats.getExp();
+        double newExp = currentExp + expGain;
 
         // Calculate required exp for next level
         long requiredExp = job.calculateExpForLevel(currentLevel);
@@ -69,22 +70,22 @@ public class JobExpUtils {
         showLevelUpAnimation(player, job, newLevel);
 
         // Check leaderboard changes
-        plugin.getLeaderboardManager().checkLeaderboardChange(player, job.getId(), newLevel);
+        plugin.getLeaderboardManager().checkLeaderboardChange(player.getUniqueId(), job, newLevel);
     }
 
-    public static void showJobBossBar(Player player, Job job, int level, long exp, long expGain, boolean leveledUp) {
+    public static void showJobBossBar(Player player, Job job, int level, double exp, double expGain, boolean leveledUp) {
         UJobsPlugin plugin = UJobsPlugin.instance;
         long requiredExp = job.calculateExpForLevel(level);
-        double progress = Math.min(1.0, (double) exp / requiredExp);
+        double progress = Math.min(1.0, exp / requiredExp);
 
         // Create boss bar title with placeholders
         String titleTemplate = job.getBossBarConfig().getTitleTemplate();
         Component title = plugin.getMiniMessage().deserialize(titleTemplate,
-                Placeholder.unparsed("level", String.valueOf(level)),
+                Formatter.number("level", level),
                 Placeholder.component("job", job.getName()),
-                Placeholder.unparsed("incomeexp", String.valueOf(expGain)),
-                Placeholder.unparsed("exp", String.valueOf(exp)),
-                Placeholder.unparsed("nextexp", String.valueOf(requiredExp))
+                Formatter.number("gained_exp", expGain),
+                Formatter.number("exp", exp),
+                Formatter.number("next_exp", requiredExp)
         );
 
         BossBar bossBar = BossBar.bossBar(
@@ -117,7 +118,7 @@ public class JobExpUtils {
 
                 Component title = plugin.getMiniMessage().deserialize(animatedTemplate,
                         Placeholder.component("job", job.getName()),
-                        Placeholder.unparsed("level", String.valueOf(newLevel))
+                        Formatter.number("level", newLevel)
                 );
 
                 BossBar levelUpBar = BossBar.bossBar(
@@ -134,15 +135,15 @@ public class JobExpUtils {
         }.runTaskTimer(plugin, 0L, 1L);
     }
 
-    public int calculatePlayerLevel(String jobId, long experience) {
+    public int calculatePlayerLevel(String jobId, double experience) {
         Job job = UJobsPlugin.instance.getJobManager().getJobs().get(jobId);
         if (job == null) return 0;
 
         int level = 0;
-        long totalExpNeeded = 0;
+        double totalExpNeeded = 0;
 
         while (totalExpNeeded <= experience) {
-            long expForNextLevel = job.calculateExpForLevel(level);
+            double expForNextLevel = job.calculateExpForLevel(level);
             if (totalExpNeeded + expForNextLevel > experience) {
                 break;
             }
@@ -153,11 +154,11 @@ public class JobExpUtils {
         return level;
     }
 
-    public long getExpForCurrentLevel(String jobId, int level, long totalExp) {
+    public double getExpForCurrentLevel(String jobId, int level, double totalExp) {
         Job job = UJobsPlugin.instance.getJobManager().getJobs().get(jobId);
         if (job == null) return 0;
 
-        long expUsed = 0;
+        double expUsed = 0;
         for (int i = 0; i < level; i++) {
             expUsed += job.calculateExpForLevel(i);
         }

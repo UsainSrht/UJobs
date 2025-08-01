@@ -29,7 +29,7 @@ public class PlayerJobData {
         return jobStats.containsKey(jobId);
     }
 
-    public void addExp(String jobId, long exp) {
+    public void addExp(String jobId, double exp) {
         JobStats stats = getJobStats(jobId);
         stats.setExp(stats.getExp() + exp);
     }
@@ -48,14 +48,14 @@ public class PlayerJobData {
     @Setter
     public static class JobStats {
         private int level;
-        private long exp;
+        private double exp;
         private double totalMoney;
 
         public JobStats() {
             this(0, 0, 0.0);
         }
 
-        public JobStats(int level, long exp, double totalMoney) {
+        public JobStats(int level, double exp, double totalMoney) {
             this.level = level;
             this.exp = exp;
             this.totalMoney = totalMoney;

@@ -6,6 +6,7 @@ import me.usainsrht.ujobs.models.PlayerJobData;
 import me.usainsrht.ujobs.utils.ProgressBarUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -62,9 +63,9 @@ public class MainJobGUI implements JobGUI {
             String jobId = job.getId();
             PlayerJobData.JobStats jobStats = playerJobData.getJobStats(jobId);
 
-            long exp = jobStats.getExp();
+            double exp = jobStats.getExp();
             int level = jobStats.getLevel();
-            long nextExp = job.calculateExpForLevel(level);
+            double nextExp = job.calculateExpForLevel(level);
             double totalMoney = jobStats.getTotalMoney();
             String progress = ProgressBarUtil.getProgressBar(exp, nextExp, 25, "", "|", "<color:dark_gray>", "|");
             TextColor primaryColor = job.getName().children().getFirst().color();
@@ -89,12 +90,14 @@ public class MainJobGUI implements JobGUI {
             item.editMeta(meta -> {
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
-                Component name = plugin.getMiniMessage().deserialize(plugin.getConfig().getString("gui.jobitem.name"), placeholders);
+                Component name = plugin.getMiniMessage().deserialize(plugin.getConfig().getString("gui.jobitem.name"), placeholders)
+                        .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.NOT_SET);
                 meta.displayName(name);
 
                 List<Component> lore = new ArrayList<>();
                 plugin.getConfig().getStringList("gui.jobitem.lore").forEach(line -> {
-                    Component component = plugin.getMiniMessage().deserialize(line, placeholders);
+                    Component component = plugin.getMiniMessage().deserialize(line, placeholders)
+                            .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.NOT_SET);
                     lore.add(component);
                 });
                 meta.lore(lore);

@@ -90,7 +90,7 @@ messages:
       sound: entity.vindicator.celebrate
     your_position_taken: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold><position>.</bold> <gray>sırayı senden aldı."
     take_someones_position:
-      chat: "<opponentdisplayname> <job> <gray>yeteneğinde geçerek <secondary><bold><position>.</bold> <gray>sen oldun."
+      chat: "<opponent_displayname> <job> <gray>yeteneğinde geçerek <secondary><bold><position>.</bold> <gray>sen oldun."
       sound: entity.pillager.celebrate
 
 symbols:

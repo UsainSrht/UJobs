@@ -48,7 +48,7 @@ public class PDCStorage implements Storage {
         PersistentDataContainer container = context.newPersistentDataContainer();
 
         container.set(TAG_LEVEL, PersistentDataType.INTEGER, jobStats.getLevel());
-        container.set(TAG_EXP, PersistentDataType.LONG, jobStats.getExp());
+        container.set(TAG_EXP, PersistentDataType.DOUBLE, jobStats.getExp());
         container.set(TAG_TOTAL_MONEY, PersistentDataType.DOUBLE, jobStats.getTotalMoney());
 
         return container;
@@ -72,7 +72,7 @@ public class PDCStorage implements Storage {
 
     public PlayerJobData.JobStats deserializeJobStats(PersistentDataContainer jobContainer) {
         int level = jobContainer.get(TAG_LEVEL, PersistentDataType.INTEGER);
-        long exp = jobContainer.get(TAG_EXP, PersistentDataType.LONG);
+        double exp = jobContainer.get(TAG_EXP, PersistentDataType.DOUBLE);
         double totalMoney = jobContainer.get(TAG_TOTAL_MONEY, PersistentDataType.DOUBLE);
 
         return new PlayerJobData.JobStats(level, exp, totalMoney);
@@ -91,15 +91,11 @@ public class PDCStorage implements Storage {
     public void save(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null && player.isOnline()) {
-            player.getScheduler().run(plugin, task -> {
-                //success
+            Bukkit.getScheduler().runTask(plugin, task -> {
                 PlayerJobData playerJobData = getCached(uuid);
                 if (playerJobData == null) return;
 
                 set(player, playerJobData);
-            }, () -> {
-                //fail
-                plugin.getLogger().warning("Can't save data of " + uuid + "! storage: PDC");
             });
         } else {
             //todo implement offlineplayer data save

@@ -9,6 +9,7 @@ import me.usainsrht.ujobs.models.PlayerJobData;
 import me.usainsrht.ujobs.utils.JobExpUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -152,7 +153,7 @@ public class JobManager {
         PlayerJobData playerJobData = plugin.getStorage().getCached(player.getUniqueId());
         if (playerJobData == null) return; //job data has to be loaded at this point
 
-        Job.ActionReward reward = job.getActionReward(action, value);
+        Job.ActionReward reward = job.getActionReward(action, value.toLowerCase(Locale.ROOT));
         if (reward == null) return;
 
         JobExpUtils.processJobExp(player, job, reward, amount);

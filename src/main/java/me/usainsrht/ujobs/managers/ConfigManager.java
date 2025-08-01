@@ -71,4 +71,12 @@ public class ConfigManager {
         return messages.getOrDefault(key, EMPTY_YAML_MESSAGE);
     }
 
+    public void saveLeaderboard() {
+        try {
+            leaderboardConfig.save(new File(plugin.getDataFolder(), "leaderboard.yml"));
+        } catch (Exception e) {
+            plugin.getLogger().severe("Failed to save leaderboard.yml: " + e.getMessage());
+        }
+    }
+
 }
