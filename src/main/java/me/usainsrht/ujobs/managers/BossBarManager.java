@@ -19,6 +19,7 @@ public class BossBarManager {
         this.plugin = plugin;
         this.playerBossBars = new ConcurrentHashMap<>();
     }
+    //todo fix levelup and xp gain bossbars flickering whn both present
 
     public void showBossBar(Player player, String key, BossBar bossBar, int durationSeconds) {
         UUID playerId = player.getUniqueId();

@@ -91,13 +91,13 @@ public class MainJobGUI implements JobGUI {
                 meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
                 Component name = plugin.getMiniMessage().deserialize(plugin.getConfig().getString("gui.jobitem.name"), placeholders)
-                        .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.NOT_SET);
+                        .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
                 meta.displayName(name);
 
                 List<Component> lore = new ArrayList<>();
                 plugin.getConfig().getStringList("gui.jobitem.lore").forEach(line -> {
                     Component component = plugin.getMiniMessage().deserialize(line, placeholders)
-                            .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.NOT_SET);
+                            .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
                     lore.add(component);
                 });
                 meta.lore(lore);

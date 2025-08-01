@@ -78,6 +78,8 @@ public final class UJobsPlugin extends JavaPlugin {
             storage.save();
         }
 
+        configManager.saveLeaderboard();
+
         // Cancel all boss bars
         if (bossBarManager != null) {
             bossBarManager.removeAllBossBars();

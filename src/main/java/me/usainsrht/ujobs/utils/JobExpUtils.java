@@ -83,6 +83,7 @@ public class JobExpUtils {
         Component title = plugin.getMiniMessage().deserialize(titleTemplate,
                 Formatter.number("level", level),
                 Placeholder.component("job", job.getName()),
+                Placeholder.unparsed("symbol_exp", plugin.getConfig().getString("symbols.exp", "xp")),
                 Formatter.number("gained_exp", expGain),
                 Formatter.number("exp", exp),
                 Formatter.number("next_exp", requiredExp)

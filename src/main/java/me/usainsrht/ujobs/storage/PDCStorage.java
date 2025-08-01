@@ -20,11 +20,11 @@ public class PDCStorage implements Storage {
     UJobsPlugin plugin;
     HashMap<UUID, PlayerJobData> cache;
 
-    public static final NamespacedKey TAG_JOBS_DATA = NamespacedKey.fromString("ujobs");
+    public static final NamespacedKey TAG_JOBS_DATA = new NamespacedKey("ujobs", "jobs_data");
 
-    public static final NamespacedKey TAG_LEVEL = NamespacedKey.fromString("level");
-    public static final NamespacedKey TAG_EXP = NamespacedKey.fromString("exp");
-    public static final NamespacedKey TAG_TOTAL_MONEY = NamespacedKey.fromString("total_money");
+    public static final NamespacedKey TAG_LEVEL = new NamespacedKey("ujobs", "level");
+    public static final NamespacedKey TAG_EXP = new NamespacedKey("ujobs", "exp");
+    public static final NamespacedKey TAG_TOTAL_MONEY = new NamespacedKey("ujobs", "total_money");
 
     public PDCStorage(UJobsPlugin plugin) {
         this.plugin = plugin;
@@ -36,6 +36,9 @@ public class PDCStorage implements Storage {
 
         for (Map.Entry<String, PlayerJobData.JobStats> entry : playerJobData.getJobStats().entrySet()) {
             PlayerJobData.JobStats jobStats = entry.getValue();
+            if (jobStats.getExp() == 0 && jobStats.getLevel() == 0 && jobStats.getTotalMoney() == 0) {
+                continue; // skip empty job stats
+            }
             NamespacedKey jobKey = NamespacedKey.fromString(entry.getKey(), plugin);
             PersistentDataContainer jobContainer = serialize(context, jobStats);
             container.set(jobKey, PersistentDataType.TAG_CONTAINER, jobContainer);
@@ -63,7 +66,7 @@ public class PDCStorage implements Storage {
             }
             PersistentDataContainer jobContainer = pdc.get(jobKey, PersistentDataType.TAG_CONTAINER);
             PlayerJobData.JobStats jobStats = deserializeJobStats(jobContainer);
-            playerJobData.setJobStats(jobKey.namespace(), jobStats);
+            playerJobData.setJobStats(jobKey.getKey(), jobStats);
         }
 
         return playerJobData;
@@ -91,12 +94,10 @@ public class PDCStorage implements Storage {
     public void save(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player != null && player.isOnline()) {
-            Bukkit.getScheduler().runTask(plugin, task -> {
-                PlayerJobData playerJobData = getCached(uuid);
-                if (playerJobData == null) return;
+            PlayerJobData playerJobData = getCached(uuid);
+            if (playerJobData == null) return;
 
-                set(player, playerJobData);
-            });
+            set(player, playerJobData);
         } else {
             //todo implement offlineplayer data save
             //currently not needed
