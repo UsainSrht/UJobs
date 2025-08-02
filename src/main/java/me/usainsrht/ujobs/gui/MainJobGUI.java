@@ -83,7 +83,9 @@ public class MainJobGUI implements JobGUI {
             placeholderSet.add(Placeholder.parsed("exp_symbol", plugin.getConfig().getString("symbols.exp")));
             placeholderSet.add(Placeholder.styling("primary", primaryColor));
             placeholderSet.add(Placeholder.styling("secondary", secondaryColor));
-            //placeholderSet.add(Formatter.number("position", position));
+            int position = plugin.getLeaderboardManager().getPosition(playerJobData.getUuid(), job);
+            String positionText = position == -1 ? plugin.getConfig().getString("leaderboard.calculate_top", "100")+"+" : String.valueOf(position);
+            placeholderSet.add(Placeholder.unparsed("position", positionText));
             TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[]{});
 
             ItemStack item = new ItemStack(job.getIcon());

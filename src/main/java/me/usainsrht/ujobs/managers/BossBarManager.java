@@ -19,7 +19,6 @@ public class BossBarManager {
         this.plugin = plugin;
         this.playerBossBars = new ConcurrentHashMap<>();
     }
-    //todo fix levelup and xp gain bossbars flickering whn both present
 
     public void showBossBar(Player player, String key, BossBar bossBar, int durationSeconds) {
         UUID playerId = player.getUniqueId();
@@ -30,20 +29,25 @@ public class BossBarManager {
         // Remove existing boss bar with same key
         BossBarData existing = bossBars.get(key);
         if (existing != null) {
-            hideBossBar(player, existing.bossBar);
+            //hideBossBar(player, existing.bossBar);
+            existing.bossBar.progress(bossBar.progress());
+            existing.bossBar.name(bossBar.name());
+
+            bossBar = existing.bossBar;
+
             if (existing.task != null && !existing.task.isCancelled()) {
                 existing.task.cancel();
             }
+        } else {
+            player.showBossBar(bossBar);
         }
-
-        // Show new boss bar
-        player.showBossBar(bossBar);
+        BossBar finalBossBar = bossBar;
 
         // Create hide task
         BukkitTask hideTask = new BukkitRunnable() {
             @Override
             public void run() {
-                hideBossBar(player, bossBar);
+                hideBossBar(player, finalBossBar);
                 bossBars.remove(key);
                 if (bossBars.isEmpty()) {
                     playerBossBars.remove(playerId);

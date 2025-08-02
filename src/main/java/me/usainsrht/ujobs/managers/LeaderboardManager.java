@@ -29,6 +29,8 @@ public class LeaderboardManager {
         for (Job job : plugin.getJobManager().getJobs().values()) {
             leaderboardJobCache.put(job, new UUID[100]);
         }
+
+
     }
 
     public void load(ConfigurationSection yml) {
@@ -84,6 +86,7 @@ public class LeaderboardManager {
         return leaderboard[position];
     }
 
+    //todo when theres no leaderboard it doesnt make a leaderboard
     public void checkLeaderboardChange(UUID uuid, Job job, int level) {
         int position = getPosition(uuid, job);
         if (position == -1) return;

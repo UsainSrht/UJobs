@@ -3,6 +3,7 @@ package me.usainsrht.ujobs.managers;
 import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.yaml.YamlMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -55,6 +56,7 @@ public class ConfigManager {
             }
         }
         leaderboardConfig = YamlConfiguration.loadConfiguration(leaderBoardFile);
+        Bukkit.getScheduler().runTask(plugin, () -> plugin.getLeaderboardManager().load(leaderboardConfig));
     }
 
     public void loadMessages() {
