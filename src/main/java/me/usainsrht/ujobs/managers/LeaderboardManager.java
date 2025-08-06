@@ -157,7 +157,9 @@ public class LeaderboardManager {
         int opponentLevel = leaderboardPlayerCache.get(opponent).getLeaderboardStats().get(job).getLevel();
         if (level > opponentLevel) {
 
-            leaderboardPlayerCache.get(uuid).getLeaderboardStats().get(job).setPosition(oneHigher);
+            leaderboardPlayerCache.computeIfAbsent(uuid, PlayerLeaderboardData::new)
+                    .getLeaderboardStats().computeIfAbsent(job, k -> new PlayerLeaderboardData.LeaderboardStats(-1, 0))
+                    .setPosition(oneHigher);
             leaderboardPlayerCache.get(uuid).getLeaderboardStats().get(job).setLevel(level);
 
             leaderboardPlayerCache.get(opponent).getLeaderboardStats().get(job).setPosition(position);
@@ -182,13 +184,13 @@ public class LeaderboardManager {
 
             TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[]{});
 
-            if (player.isOnline()) MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("messages.leaderboard.take_someones_position"), placeholders);
+            if (player.isOnline()) MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("leaderboard.take_someones_position"), placeholders);
             if (opponentPlayer.isOnline()) MessageUtil.send(opponentPlayer.getPlayer(), plugin.getConfigManager().getMessage("leaderboard.your_position_taken"), placeholders);
 
             if (oneHigher == 1) {
-                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("messages.leaderboard.take_lead"), placeholders);
+                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard.take_lead"), placeholders);
             } else if (oneHigher == 10) {
-                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("messages.leaderboard.get_in_top_10"), placeholders);
+                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard.get_in_top_10"), placeholders);
             }
 
             save();
@@ -200,11 +202,10 @@ public class LeaderboardManager {
                 if (leaderboard[belowOpponent] == null) {
                     leaderboard[belowOpponent] = uuid;
 
-                    PlayerLeaderboardData playerData = leaderboardPlayerCache.get(uuid);
-                    if (playerData != null) {
-                        playerData.getLeaderboardStats().get(job).setPosition(belowOpponent);
-                        playerData.getLeaderboardStats().get(job).setLevel(level);
-                    }
+                    leaderboardPlayerCache.computeIfAbsent(uuid, PlayerLeaderboardData::new)
+                            .getLeaderboardStats().computeIfAbsent(job, k -> new PlayerLeaderboardData.LeaderboardStats(-1, 0))
+                            .setPosition(belowOpponent);
+                    leaderboardPlayerCache.get(uuid).getLeaderboardStats().get(job).setLevel(level);
 
                     save();
                 }
