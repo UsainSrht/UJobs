@@ -8,6 +8,7 @@ import me.usainsrht.ujobs.commands.MainCommand;
 import me.usainsrht.ujobs.listeners.InventoryListener;
 import me.usainsrht.ujobs.listeners.JoinListener;
 import me.usainsrht.ujobs.listeners.QuitListener;
+import me.usainsrht.ujobs.listeners.SaveListener;
 import me.usainsrht.ujobs.listeners.job_actions.*;
 import me.usainsrht.ujobs.managers.*;
 import me.usainsrht.ujobs.models.BuiltInActions;
@@ -101,6 +102,7 @@ public final class UJobsPlugin extends JavaPlugin {
             // Load configurations
             configManager.loadConfigs();
             jobManager.loadJobs();
+            leaderboardManager.load(configManager.getLeaderboardConfig());
 
             getLogger().info("All managers initialized successfully!");
         } catch (Exception e) {
@@ -114,42 +116,43 @@ public final class UJobsPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new QuitListener(this), this);
+        getServer().getPluginManager().registerEvents(new SaveListener(this), this);
 
         // job listeners
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.BREAK)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
             getServer().getPluginManager().registerEvents(new BreakListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.PLACE)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {
             getServer().getPluginManager().registerEvents(new PlaceListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.TAME)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.TAME)) {
             getServer().getPluginManager().registerEvents(new TameListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.BREED)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.BREED)) {
             getServer().getPluginManager().registerEvents(new BreedListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.KILL)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.KILL)) {
             getServer().getPluginManager().registerEvents(new KillListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.ENCHANT)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.ENCHANT)) {
             getServer().getPluginManager().registerEvents(new EnchantListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.FISH)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.FISH)) {
             getServer().getPluginManager().registerEvents(new FishListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.RAID)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.RAID)) {
             getServer().getPluginManager().registerEvents(new RaidListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.GENERATE_LOOT)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.GENERATE_LOOT)) {
             getServer().getPluginManager().registerEvents(new LootGenerateListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.TRADE)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.TRADE)) {
             getServer().getPluginManager().registerEvents(new TradeListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.ANVIL_ENCHANT)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.ANVIL_ENCHANT)) {
             getServer().getPluginManager().registerEvents(new AnvilEnchantListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.CRAFT)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.CRAFT)) {
             getServer().getPluginManager().registerEvents(new CraftListener(jobManager), this);
         }
 

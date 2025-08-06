@@ -7,7 +7,9 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -19,6 +21,7 @@ public class Job {
     private final Sound levelUpSound;
     private final BossBarConfig bossBarConfig;
     private final Map<Action, Map<String, ActionReward>> actions;
+    private final List<JobInfoLine> infoLines;
 
     public Job(String id, Component name, Material icon, String levelEquation,
                Sound levelUpSound, BossBarConfig bossBarConfig) {
@@ -29,6 +32,7 @@ public class Job {
         this.levelUpSound = levelUpSound;
         this.bossBarConfig = bossBarConfig;
         this.actions = new HashMap<>();
+        this.infoLines = new ArrayList<>();
     }
 
     public void addAction(Action action, String value, ActionReward reward) {

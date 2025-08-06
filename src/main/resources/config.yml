@@ -1,26 +1,26 @@
 expinfo:
-  lore_size: 15
+  list_in_lore: 15
   gui:
     title: "<gradient:#562d1d:#4c243c>Bilgiler ➢ Sıralama ➣ <gradient:#ce1e92:#aa00ff>Tecrübeler"
     blank_material: MAGENTA_STAINED_GLASS_PANE
     jobitem:
       name: "<job>"
       lore:
-        - " <primary><1actionandvalue> <secondary><1exp><gray><expsymbol> <primary><1money><gray><moneysymbol> "
-        - " <primary><2actionandvalue> <secondary><2exp><gray><expsymbol> <primary><2money><gray><moneysymbol> "
-        - " <primary><3actionandvalue> <secondary><3exp><gray><expsymbol> <primary><3money><gray><moneysymbol> "
-        - " <primary><4actionandvalue> <secondary><4exp><gray><expsymbol> <primary><4money><gray><moneysymbol> "
-        - " <primary><5actionandvalue> <secondary><5exp><gray><expsymbol> <primary><5money><gray><moneysymbol> "
-        - " <primary><6actionandvalue> <secondary><6exp><gray><expsymbol> <primary><6money><gray><moneysymbol> "
-        - " <primary><7actionandvalue> <secondary><7exp><gray><expsymbol> <primary><7money><gray><moneysymbol> "
-        - " <primary><8actionandvalue> <secondary><8exp><gray><expsymbol> <primary><8money><gray><moneysymbol> "
-        - " <primary><9actionandvalue> <secondary><9exp><gray><expsymbol> <primary><9money><gray><moneysymbol> "
-        - " <primary><10actionandvalue> <secondary><10exp><gray><expsymbol> <primary><10money><gray><moneysymbol> "
-        - " <primary><11actionandvalue> <secondary><11exp><gray><expsymbol> <primary><11money><gray><moneysymbol> "
-        - " <primary><12actionandvalue> <secondary><12exp><gray><expsymbol> <primary><12money><gray><moneysymbol> "
-        - " <primary><13actionandvalue> <secondary><13exp><gray><expsymbol> <primary><13money><gray><moneysymbol> "
-        - " <primary><14actionandvalue> <secondary><14exp><gray><expsymbol> <primary><14money><gray><moneysymbol> "
-        - " <primary><15actionandvalue> <secondary><15exp><gray><expsymbol> <primary><15money><gray><moneysymbol> "
+        - " <primary><1_action_value> <secondary><1_exp><gray><symbol_exp> <primary><1_money><gray><symbol_money> "
+        - " <primary><2_action_value> <secondary><2_exp><gray><symbol_exp> <primary><2_money><gray><symbol_money> "
+        - " <primary><3_action_value> <secondary><3_exp><gray><symbol_exp> <primary><3_money><gray><symbol_money> "
+        - " <primary><4_action_value> <secondary><4_exp><gray><symbol_exp> <primary><4_money><gray><symbol_money> "
+        - " <primary><5_action_value> <secondary><5_exp><gray><symbol_exp> <primary><5_money><gray><symbol_money> "
+        - " <primary><6_action_value> <secondary><6_exp><gray><symbol_exp> <primary><6_money><gray><symbol_money> "
+        - " <primary><7_action_value> <secondary><7_exp><gray><symbol_exp> <primary><7_money><gray><symbol_money> "
+        - " <primary><8_action_value> <secondary><8_exp><gray><symbol_exp> <primary><8_money><gray><symbol_money> "
+        - " <primary><9_action_value> <secondary><9_exp><gray><symbol_exp> <primary><9_money><gray><symbol_money> "
+        - " <primary><10_action_value> <secondary><10_exp><gray><symbol_exp> <primary><10_money><gray><symbol_money> "
+        - " <primary><11_action_value> <secondary><11_exp><gray><symbol_exp> <primary><11_money><gray><symbol_money> "
+        - " <primary><12_action_value> <secondary><12_exp><gray><symbol_exp> <primary><12_money><gray><symbol_money> "
+        - " <primary><13_action_value> <secondary><13_exp><gray><symbol_exp> <primary><13_money><gray><symbol_money> "
+        - " <primary><14_action_value> <secondary><14_exp><gray><symbol_exp> <primary><14_money><gray><symbol_money> "
+        - " <primary><15_action_value> <secondary><15_exp><gray><symbol_exp> <primary><15_money><gray><symbol_money> "
         - ""
         - " <primary>SOL ↓ <dark_gray>| <secondary>SAĞ ↑ "
         - " <gold>ℹ <primary>SHIFT <gray>ile basmak 5'e katlar."
@@ -33,16 +33,16 @@ leaderboard:
     jobitem:
       name: "<job> <dark_gray>(<primary><min> <gray>ile <secondary><max><dark_gray>)"
       lore:
-        - " <primary><bold><1>.</bold> <1displayname> <secondary><1level> <gray>seviye "
-        - " <primary><bold><2>.</bold> <2displayname> <secondary><2level> <gray>seviye "
-        - " <primary><bold><3>.</bold> <3displayname> <secondary><3level> <gray>seviye "
-        - " <primary><bold><4>.</bold> <4displayname> <secondary><4level> <gray>seviye "
-        - " <primary><bold><5>.</bold> <5displayname> <secondary><5level> <gray>seviye "
-        - " <primary><bold><6>.</bold> <6displayname> <secondary><6level> <gray>seviye "
-        - " <primary><bold><7>.</bold> <7displayname> <secondary><7level> <gray>seviye "
-        - " <primary><bold><8>.</bold> <8displayname> <secondary><8level> <gray>seviye "
-        - " <primary><bold><9>.</bold> <9displayname> <secondary><9level> <gray>seviye "
-        - " <primary><bold><10>.</bold> <10displayname> <secondary><10level> <gray>seviye "
+        - " <primary><bold><1_position>.</bold> <1_displayname> <secondary><1_level> <gray>seviye "
+        - " <primary><bold><2_position>.</bold> <2_displayname> <secondary><2_level> <gray>seviye "
+        - " <primary><bold><3_position>.</bold> <3_displayname> <secondary><3_level> <gray>seviye "
+        - " <primary><bold><4_position>.</bold> <4_displayname> <secondary><4_level> <gray>seviye "
+        - " <primary><bold><5_position>.</bold> <5_displayname> <secondary><5_level> <gray>seviye "
+        - " <primary><bold><6_position>.</bold> <6_displayname> <secondary><6_level> <gray>seviye "
+        - " <primary><bold><7_position>.</bold> <7_displayname> <secondary><7_level> <gray>seviye "
+        - " <primary><bold><8_position>.</bold> <8_displayname> <secondary><8_level> <gray>seviye "
+        - " <primary><bold><9_position>.</bold> <9_displayname> <secondary><9_level> <gray>seviye "
+        - " <primary><bold><10_position>.</bold> <10_displayname> <secondary><10_level> <gray>seviye "
         - " <gray>Sen <primary><level> <gray>seviye ile <secondary><position>. <gray>sıradasın. "
         - ""
         - " <gold>⌚ <gray>Yenilenmeye kalan "
@@ -66,6 +66,14 @@ gui:
       - ""
       - " <gray>Sıralamaya gitmek için <primary>SOL <gray>tıkla. "
       - " <gray>Tecrübelere gitmek için <primary>SAĞ <gray>tıkla. "
+  navigation:
+    left:
+      material: ARROW
+      name: "<yellow><-"
+    right:
+      material: ARROW
+      name: "<yellow>->"
+
 
 command:
   name: "jobs"
@@ -105,7 +113,7 @@ actions:
   fish: "<value> <gray>tut"
   enchant: "<value> <gray>büyü bas"
   anvil_enchant: "<value> <gray>ile örste büyü bas"
-  lootgenerate: "<value> <gray>sandığı aç"
+  generate_loot: "<value> <gray>sandığı aç"
   raid: "<value> <gray>savun"
   craft: "<value> <gray>üret"
   trade: "<value> <gray>takası yap"

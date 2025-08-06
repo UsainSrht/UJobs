@@ -1,34 +1,78 @@
 package me.usainsrht.ujobs.models;
 
-import java.util.Locale;
+public class BuiltInActions {
 
-public enum BuiltInActions implements Action {
+    public enum Entity implements EntityAction {
 
-    KILL("kill"),
-    BREAK("break"),
-    PLACE("place"),
-    BREED("breed"),
-    TAME("tame"),
-    FISH("fish"),
-    ENCHANT("enchant"),
-    ANVIL_ENCHANT("anvil_enchant"),
-    GENERATE_LOOT("generate_loot"),
-    RAID("raid"),
-    CRAFT("craft"),
-    TRADE("trade");
+        KILL("kill"),
+        BREED("breed"),
+        TAME("tame");
 
-    final String name;
+        final String name;
+        Entity(String name) {
+            this.name = name;
+        }
 
-    BuiltInActions(String name) {
-        this.name = name;
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public enum Material implements MaterialAction {
+
+        BREAK("break"),
+        PLACE("place"),
+        FISH("fish"),
+        ANVIL_ENCHANT("anvil_enchant"),
+        CRAFT("craft"),
+        TRADE("trade");
+
+        final String name;
+        Material(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+    }
+
+    public enum Special implements SpecialAction {
+
+        ENCHANT("enchant"),
+        GENERATE_LOOT("generate_loot"),
+        RAID("raid");
+
+        final String name;
+        Special(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 
     public static Action get(String name) {
-        return valueOf(name.toUpperCase(Locale.ROOT));
+        for (Entity entity : Entity.values()) {
+            if (entity.getName().equalsIgnoreCase(name)) {
+                return entity;
+            }
+        }
+        for (Material material : Material.values()) {
+            if (material.getName().equalsIgnoreCase(name)) {
+                return material;
+            }
+        }
+        for (Special special : Special.values()) {
+            if (special.getName().equalsIgnoreCase(name)) {
+                return special;
+            }
+        }
+        return null;
     }
+
 }

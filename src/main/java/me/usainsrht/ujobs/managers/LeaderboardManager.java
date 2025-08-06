@@ -1,8 +1,11 @@
 package me.usainsrht.ujobs.managers;
 
+import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.Job;
+import me.usainsrht.ujobs.models.PlayerJobData;
 import me.usainsrht.ujobs.models.PlayerLeaderboardData;
+import me.usainsrht.ujobs.storage.PDCStorage;
 import me.usainsrht.ujobs.utils.MessageUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
@@ -15,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.util.*;
 
+@Getter
 public class LeaderboardManager {
 
     UJobsPlugin plugin;
@@ -25,15 +29,13 @@ public class LeaderboardManager {
         this.plugin = plugin;
         this.leaderboardPlayerCache = new HashMap<>();
         this.leaderboardJobCache = new HashMap<>();
+    }
 
+    public void load(ConfigurationSection yml) {
         for (Job job : plugin.getJobManager().getJobs().values()) {
             leaderboardJobCache.put(job, new UUID[100]);
         }
 
-
-    }
-
-    public void load(ConfigurationSection yml) {
         ConfigurationSection leaderboardSection = yml.getConfigurationSection("leaderboard");
         if (leaderboardSection == null) return;
         leaderboardSection.getKeys(false).forEach(jobId -> {
@@ -63,6 +65,12 @@ public class LeaderboardManager {
 
         leaderboardConfig.set("leaderboard", null); // Clear existing leaderboard data
 
+        for (Job job : plugin.getJobManager().getJobs().values()) {
+            if (!leaderboardJobCache.containsKey(job) || leaderboardJobCache.get(job) == null || leaderboardJobCache.get(job)[0] == null) {
+                leaderboardJobCache.put(job, createLeaderboard(job));
+            }
+        }
+
         leaderboardPlayerCache.forEach(((uuid, playerLeaderboardData) -> {
             playerLeaderboardData.getLeaderboardStats().forEach((job, stats) -> {
                 String path = "leaderboard." + job.getId() + "." + uuid.toString();
@@ -74,26 +82,77 @@ public class LeaderboardManager {
         plugin.getConfigManager().saveLeaderboard();
     }
 
+    public UUID[] createLeaderboard(Job job) {
+        //Bukkit.broadcastMessage("creating leaderboard for job: " + job.getId());
+        if (plugin.getStorage() instanceof PDCStorage pdcStorage) {
+            UUID[] leaderboard = new UUID[plugin.getConfig().getInt("leaderboard.calculate_top", 100)];
+            leaderboardJobCache.put(job, leaderboard);
+
+            for (PlayerJobData playerJobData : pdcStorage.getCache().values()) {
+                int level = playerJobData.getJobStats(job.getId()).getLevel();
+                if (level < 0) continue;
+                // Find the correct index to insert based on level (descending)
+                int insertIndex = 0;
+                while (insertIndex < leaderboard.length && leaderboard[insertIndex] != null) {
+                    UUID existingUuid = leaderboard[insertIndex];
+                    int existingLevel = -1;
+                    if (existingUuid != null) {
+                        PlayerJobData existingPlayerJobData = pdcStorage.getCache().get(existingUuid);
+                        if (existingPlayerJobData == null) break;
+                        existingLevel = existingPlayerJobData.getJobStats(job.getId()).getLevel();
+                    }
+                    if (level > existingLevel) break;
+                    insertIndex++;
+                }
+                if (insertIndex < leaderboard.length) {
+                    // Shift lower entries down
+                    System.arraycopy(leaderboard, insertIndex, leaderboard, insertIndex + 1, leaderboard.length - insertIndex - 1);
+                    leaderboard[insertIndex] = playerJobData.getUuid();
+                    leaderboardPlayerCache.computeIfAbsent(playerJobData.getUuid(), PlayerLeaderboardData::new)
+                            .getLeaderboardStats().put(job, new PlayerLeaderboardData.LeaderboardStats(insertIndex, level));
+                }
+            }
+
+            return leaderboard;
+        }
+        return null;
+    }
+
     public int getPosition(UUID uuid, Job job) {
         PlayerLeaderboardData data = leaderboardPlayerCache.get(uuid);
         if (data == null) return -1;
-        return data.getLeaderboardStats().get(job).getPosition();
+        PlayerLeaderboardData.LeaderboardStats stats = data.getLeaderboardStats().get(job);
+        if (stats == null) return -1;
+        return stats.getPosition();
     }
 
     public UUID getPlayerByPosition(int position, Job job) {
+        if (position < 0) return null;
         UUID[] leaderboard = leaderboardJobCache.get(job);
-        if (leaderboard == null || position < 0 || position >= leaderboard.length) return null;
+        if (leaderboard == null || position >= leaderboard.length) return null;
         return leaderboard[position];
     }
 
-    //todo when theres no leaderboard it doesnt make a leaderboard
     public void checkLeaderboardChange(UUID uuid, Job job, int level) {
         int position = getPosition(uuid, job);
-        if (position == -1) return;
-
-        int oneHigher = position - 1;
-        UUID opponent = getPlayerByPosition(oneHigher, job);
-        if (opponent == null) return;
+        int oneHigher;
+        UUID opponent;
+        int calculateTop = plugin.getConfig().getInt("leaderboard.calculate_top", 100);
+        if (position == -1) {
+            // if a player is not in the leaderboard, get the last player in the leaderboard as an opponent
+            oneHigher = calculateTop - 1;
+            opponent = null;
+            while (oneHigher >= 0) {
+                opponent = getPlayerByPosition(oneHigher, job);
+                if (opponent != null && !opponent.equals(uuid)) break;
+                oneHigher--;
+            }
+        } else {
+            oneHigher = position - 1;
+            if (oneHigher < 0) return;
+            opponent = getPlayerByPosition(oneHigher, job);
+        }
+        if (opponent == null || opponent.equals(uuid)) return;
 
         int opponentLevel = leaderboardPlayerCache.get(opponent).getLeaderboardStats().get(job).getLevel();
         if (level > opponentLevel) {
@@ -104,7 +163,7 @@ public class LeaderboardManager {
             leaderboardPlayerCache.get(opponent).getLeaderboardStats().get(job).setPosition(position);
 
             leaderboardJobCache.get(job)[oneHigher] = uuid;
-            leaderboardJobCache.get(job)[position] = opponent;
+            if (position != -1) leaderboardJobCache.get(job)[position] = opponent;
 
             // Prepare placeholders and messages
             OfflinePlayer opponentPlayer = Bukkit.getOfflinePlayer(opponent);
@@ -133,6 +192,23 @@ public class LeaderboardManager {
             }
 
             save();
+        } else {
+            //check if one position below opponent is in calculate list and is empty
+            int belowOpponent = oneHigher + 1;
+            if (belowOpponent < calculateTop && belowOpponent > 0) {
+                UUID[] leaderboard = leaderboardJobCache.get(job);
+                if (leaderboard[belowOpponent] == null) {
+                    leaderboard[belowOpponent] = uuid;
+
+                    PlayerLeaderboardData playerData = leaderboardPlayerCache.get(uuid);
+                    if (playerData != null) {
+                        playerData.getLeaderboardStats().get(job).setPosition(belowOpponent);
+                        playerData.getLeaderboardStats().get(job).setLevel(level);
+                    }
+
+                    save();
+                }
+            }
         }
     }
 }

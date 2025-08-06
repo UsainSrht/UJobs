@@ -23,7 +23,6 @@ public class ConfigManager {
     public ConfigManager(UJobsPlugin plugin) {
         this.plugin = plugin;
 
-        loadConfigs();
     }
 
     public void reload() {
@@ -56,7 +55,6 @@ public class ConfigManager {
             }
         }
         leaderboardConfig = YamlConfiguration.loadConfiguration(leaderBoardFile);
-        Bukkit.getScheduler().runTask(plugin, () -> plugin.getLeaderboardManager().load(leaderboardConfig));
     }
 
     public void loadMessages() {

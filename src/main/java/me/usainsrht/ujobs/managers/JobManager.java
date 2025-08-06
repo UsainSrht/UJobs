@@ -2,10 +2,7 @@ package me.usainsrht.ujobs.managers;
 
 import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
-import me.usainsrht.ujobs.models.Action;
-import me.usainsrht.ujobs.models.BuiltInActions;
-import me.usainsrht.ujobs.models.Job;
-import me.usainsrht.ujobs.models.PlayerJobData;
+import me.usainsrht.ujobs.models.*;
 import me.usainsrht.ujobs.utils.JobExpUtils;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -141,7 +138,11 @@ public class JobManager {
                     if (rewardSection != null) {
                         double exp = rewardSection.getDouble("exp", 0.0);
                         double money = rewardSection.getDouble("money", 0.0);
-                        job.addAction(action, value, new Job.ActionReward(exp, money));
+                        Job.ActionReward actionReward = new Job.ActionReward(exp, money);
+                        job.addAction(action, value, actionReward);
+                        JobInfoLine infoLine = new JobInfoLine(action, value, actionReward);
+                        job.getInfoLines().add(infoLine);
+
                         actionJobMap.computeIfAbsent(action, k -> new HashSet<>()).add(job);
                     }
                 }

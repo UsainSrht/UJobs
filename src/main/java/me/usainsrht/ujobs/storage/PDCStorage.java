@@ -1,5 +1,6 @@
 package me.usainsrht.ujobs.storage;
 
+import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.PlayerJobData;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+@Getter
 public class PDCStorage implements Storage {
 
     UJobsPlugin plugin;

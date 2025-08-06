@@ -1,5 +1,6 @@
 package me.usainsrht.ujobs.gui;
 
+import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.PlayerJobData;
@@ -12,6 +13,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -20,13 +22,18 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@Getter
 public class MainJobGUI implements JobGUI {
 
     public Inventory inventory;
+    public UUID uuid;
+
+    public static final NamespacedKey jobKey = new NamespacedKey("ujobs", "job_id");
 
     public MainJobGUI(UJobsPlugin plugin, UUID uuid) {
         int rows = (int)Math.ceil(plugin.getJobManager().getJobs().size() / 7f) + 2;
@@ -84,13 +91,13 @@ public class MainJobGUI implements JobGUI {
             placeholderSet.add(Placeholder.styling("primary", primaryColor));
             placeholderSet.add(Placeholder.styling("secondary", secondaryColor));
             int position = plugin.getLeaderboardManager().getPosition(playerJobData.getUuid(), job);
-            String positionText = position == -1 ? plugin.getConfig().getString("leaderboard.calculate_top", "100")+"+" : String.valueOf(position);
+            String positionText = position == -1 ? plugin.getConfig().getString("leaderboard.calculate_top", "100")+"+" : String.valueOf(position+1);
             placeholderSet.add(Placeholder.unparsed("position", positionText));
             TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[]{});
 
             ItemStack item = new ItemStack(job.getIcon());
             item.editMeta(meta -> {
-                meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+                meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
                 Component name = plugin.getMiniMessage().deserialize(plugin.getConfig().getString("gui.jobitem.name"), placeholders)
                         .decorationIfAbsent(TextDecoration.ITALIC, TextDecoration.State.FALSE);
@@ -103,6 +110,8 @@ public class MainJobGUI implements JobGUI {
                     lore.add(component);
                 });
                 meta.lore(lore);
+
+                meta.getPersistentDataContainer().set(jobKey, PersistentDataType.STRING, jobId);
             });
 
             int slot = baseSlot + i;
@@ -124,6 +133,16 @@ public class MainJobGUI implements JobGUI {
     @Override
     public void onClick(InventoryClickEvent e) {
         e.setCancelled(true);
+
+        ItemStack itemStack = e.getCurrentItem();
+        if (itemStack == null || itemStack.getType() == Material.AIR) return;
+        if (itemStack.getPersistentDataContainer().has(jobKey)) {
+            if (e.getClick().isLeftClick()) {
+                new LeaderboardGUI(UJobsPlugin.instance, uuid).open((Player) e.getWhoClicked());
+            } else if (e.getClick().isRightClick()) {
+                new JobInfoGUI(UJobsPlugin.instance).open((Player) e.getWhoClicked());
+            }
+        }
     }
 
     @Override

@@ -29,9 +29,9 @@ public class BreakListener implements Listener {
             value = block.getType().name() + ageable.getAge();
         } else value = block.getType().name();
 
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.BREAK)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.BREAK)) {
-                jobManager.processAction(e.getPlayer(), BuiltInActions.BREAK, value, job, 1);
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
+            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Material.BREAK)) {
+                jobManager.processAction(e.getPlayer(), BuiltInActions.Material.BREAK, value, job, 1);
             }
         }
 

@@ -149,7 +149,7 @@ jobs:
         glow_squid:
           exp: 2.8
           money: 0.28
-        mushroom_cow:
+        mooshroom:
           exp: 5
           money: 0.5
         strider:
