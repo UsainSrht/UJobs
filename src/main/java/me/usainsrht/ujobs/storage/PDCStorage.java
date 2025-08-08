@@ -85,11 +85,11 @@ public class PDCStorage implements Storage {
 
     @Override
     public void save() {
-        plugin.getLogger().info("Saving cache job data to PDC storage.");
+        //plugin.getLogger().info("Saving cache job data to PDC storage.");
         for (UUID uuid : cache.keySet()) {
             save(uuid);
         }
-        plugin.getLogger().info("Saved cache job data to PDC storage.");
+        //plugin.getLogger().info("Saved cache job data to PDC storage.");
     }
 
     @Override

@@ -98,6 +98,13 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.songoda</groupId>
+            <artifactId>ultimatetimber</artifactId>
+            <systemPath>${project.basedir}/ultimate-timber_v4_5_0.jar</systemPath>
+            <version>4.5.0</version>
+            <scope>system</scope>
+        </dependency>
         <!-- <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>

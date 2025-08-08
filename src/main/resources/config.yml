@@ -89,15 +89,14 @@ messages:
   reload: "<green>reloaded!"
   page_turn:
     sound: item.book.page_turn
-  leaderboard:
-    take_lead:
+  leaderboard_take_lead:
       chat: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold>1.</bold><gray>'liği <opponentdisplayname> <gray>aldı."
       sound: entity.ravager.celebrate
-    get_in_top_10:
+  leaderboard_get_in_top_10:
       chat: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp ilk <secondary><bold>10</bold><gray>'a girdi."
       sound: entity.vindicator.celebrate
-    your_position_taken: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold><position>.</bold> <gray>sırayı senden aldı."
-    take_someones_position:
+  leaderboard_your_position_taken: "<displayname> <job> <gray>yeteneğinde <primary><level> <gray>seviyeye ulaşıp <secondary><bold><position>.</bold> <gray>sırayı senden aldı."
+  leaderboard_take_someones_position:
       chat: "<opponent_displayname> <job> <gray>yeteneğinde geçerek <secondary><bold><position>.</bold> <gray>sen oldun."
       sound: entity.pillager.celebrate
 

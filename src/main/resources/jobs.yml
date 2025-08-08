@@ -254,6 +254,21 @@ jobs:
         sandstone:
           exp: 0.1
           money: 0.01
+        tuff:
+          exp: 0.1
+          money: 0.01
+        calcite:
+          exp: 0.1
+          money: 0.01
+        smooth_basalt:
+          exp: 0.1
+          money: 0.01
+        amethyst_block:
+          exp: 0.1
+          money: 0.01
+        amethyst_cluster:
+          exp: 0.1
+          money: 0.01
   farmer:
     name: "<gradient:#FFD500:#FF9B00>Çiftçilik"
     bossbar:

@@ -184,17 +184,18 @@ public class LeaderboardManager {
 
             TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[]{});
 
-            if (player.isOnline()) MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("leaderboard.take_someones_position"), placeholders);
-            if (opponentPlayer.isOnline()) MessageUtil.send(opponentPlayer.getPlayer(), plugin.getConfigManager().getMessage("leaderboard.your_position_taken"), placeholders);
+            if (player.isOnline()) MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_take_someones_position"), placeholders);
+            if (opponentPlayer.isOnline()) MessageUtil.send(opponentPlayer.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_your_position_taken"), placeholders);
 
-            if (oneHigher == 1) {
-                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard.take_lead"), placeholders);
-            } else if (oneHigher == 10) {
-                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard.get_in_top_10"), placeholders);
+            if (oneHigher == 0) {
+                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_take_lead"), placeholders);
+            } else if (oneHigher == 9) {
+                MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_get_in_top_10"), placeholders);
             }
 
             save();
         } else {
+            //todo if same level with opponent update his level on leaderboard
             //check if one position below opponent is in calculate list and is empty
             int belowOpponent = oneHigher + 1;
             if (belowOpponent < calculateTop && belowOpponent > 0) {
