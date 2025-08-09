@@ -51,7 +51,7 @@ public class CraftListener  implements Listener {
 
             if (amount <= 0) return;
 
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Material.CRAFT)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.CRAFT)) {
                 jobManager.processAction(player, BuiltInActions.Material.CRAFT, result.getType().name(), job, amount);
             }
         }

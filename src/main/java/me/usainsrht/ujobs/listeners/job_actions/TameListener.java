@@ -25,7 +25,7 @@ public class TameListener implements Listener {
         LivingEntity entity = e.getEntity();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.TAME)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Entity.TAME)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Entity.TAME)) {
                 jobManager.processAction(player, BuiltInActions.Entity.TAME, entity.getType().name(), job, 1);
             }
         }

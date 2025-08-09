@@ -22,8 +22,9 @@ public class LootGenerateListener implements Listener {
         if (!(e.getEntity() instanceof Player player)) return;
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.GENERATE_LOOT)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Special.GENERATE_LOOT)) {
-                jobManager.processAction(player, BuiltInActions.Special.GENERATE_LOOT, e.getLootTable().key().value(), job, 1);
+            String lootTable = e.getLootTable().key().value().replace("chests/", "");
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.GENERATE_LOOT)) {
+                jobManager.processAction(player, BuiltInActions.Special.GENERATE_LOOT, lootTable, job, 1);
             }
         }
     }

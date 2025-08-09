@@ -83,7 +83,6 @@ public class LeaderboardManager {
     }
 
     public UUID[] createLeaderboard(Job job) {
-        //Bukkit.broadcastMessage("creating leaderboard for job: " + job.getId());
         if (plugin.getStorage() instanceof PDCStorage pdcStorage) {
             UUID[] leaderboard = new UUID[plugin.getConfig().getInt("leaderboard.calculate_top", 100)];
             leaderboardJobCache.put(job, leaderboard);
@@ -152,7 +151,16 @@ public class LeaderboardManager {
             if (oneHigher < 0) return;
             opponent = getPlayerByPosition(oneHigher, job);
         }
-        if (opponent == null || opponent.equals(uuid)) return;
+
+        if (opponent == null) return;
+
+        if (opponent.equals(uuid)) {
+
+            //todo if you are on the leaderboard and levelup, it still doesnt update your levelup if you dont pass anyone
+            leaderboardPlayerCache.get(uuid).getLeaderboardStats().get(job).setLevel(level);
+
+            return;
+        }
 
         int opponentLevel = leaderboardPlayerCache.get(opponent).getLeaderboardStats().get(job).getLevel();
         if (level > opponentLevel) {

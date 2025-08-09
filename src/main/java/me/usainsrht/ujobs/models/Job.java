@@ -2,10 +2,11 @@ package me.usainsrht.ujobs.models;
 
 import lombok.Getter;
 import me.usainsrht.ujobs.utils.MathUtil;
+import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,24 +16,38 @@ import java.util.Map;
 @Getter
 public class Job {
     private final String id;
-    private final Component name;
-    private final Material icon;
-    private final String levelEquation;
-    private final Sound levelUpSound;
-    private final BossBarConfig bossBarConfig;
+    private Component name;
+    private Material icon;
+    private String levelEquation;
+    private YamlMessage levelUpMessage;
+    private BossBarConfig bossBarConfig;
     private final Map<Action, Map<String, ActionReward>> actions;
     private final List<JobInfoLine> infoLines;
 
     public Job(String id, Component name, Material icon, String levelEquation,
-               Sound levelUpSound, BossBarConfig bossBarConfig) {
+               YamlMessage levelUpMessage, BossBarConfig bossBarConfig) {
         this.id = id;
         this.name = name;
         this.icon = icon;
         this.levelEquation = levelEquation;
-        this.levelUpSound = levelUpSound;
+        this.levelUpMessage = levelUpMessage;
         this.bossBarConfig = bossBarConfig;
         this.actions = new HashMap<>();
         this.infoLines = new ArrayList<>();
+    }
+
+    public void update(Job otherJobInstance) {
+        if (otherJobInstance == null || !this.id.equalsIgnoreCase(otherJobInstance.id)) return;
+
+        this.name = otherJobInstance.name;
+        this.icon = otherJobInstance.icon;
+        this.levelEquation = otherJobInstance.levelEquation;
+        this.levelUpMessage = otherJobInstance.levelUpMessage;
+        this.bossBarConfig = otherJobInstance.bossBarConfig;
+        this.actions.clear();
+        this.actions.putAll(otherJobInstance.actions);
+        this.infoLines.clear();
+        this.infoLines.addAll(otherJobInstance.infoLines);
     }
 
     public void addAction(Action action, String value, ActionReward reward) {

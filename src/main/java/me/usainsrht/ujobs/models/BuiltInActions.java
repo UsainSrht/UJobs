@@ -24,9 +24,11 @@ public class BuiltInActions {
         BREAK("break"),
         PLACE("place"),
         FISH("fish"),
-        ANVIL_ENCHANT("anvil_enchant"),
+        ANVIL_MERGE("anvil_merge"),
         CRAFT("craft"),
-        TRADE("trade");
+        TRADE("trade"),
+        HARVEST("harvest"),
+        SMELT("smelt");
 
         final String name;
         Material(String name) {

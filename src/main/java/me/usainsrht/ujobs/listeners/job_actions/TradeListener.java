@@ -32,7 +32,7 @@ public class TradeListener implements Listener {
             if (adjusted1 != null && !adjusted1.isEmpty()) {
                 adjusted1Name = adjusted1.getType().name();
             }
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Material.TRADE)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.TRADE)) {
                 jobManager.processAction(player, BuiltInActions.Material.TRADE, result, job, 1);
                 jobManager.processAction(player, BuiltInActions.Material.TRADE, adjusted1Name, job, 1);
             }

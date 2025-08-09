@@ -26,7 +26,7 @@ public class KillListener implements Listener {
 
         if (e.getFinalDamage() >= damageable.getHealth()) {
             if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.KILL)) {
-                for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Entity.KILL)) {
+                for (Job job : jobManager.getJobsWithAction(BuiltInActions.Entity.KILL)) {
                     jobManager.processAction(player, BuiltInActions.Entity.KILL, damageable.getType().name(), job, 1);
                 }
             }

@@ -32,7 +32,7 @@ public class TreeFallListener implements Listener {
         });
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Material.BREAK)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.BREAK)) {
                 amounts.forEach((log, amount) -> {
                     jobManager.processAction(e.getPlayer(), BuiltInActions.Material.BREAK, log.name(), job, amount);
                 });

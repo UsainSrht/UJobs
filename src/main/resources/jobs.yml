@@ -7,7 +7,9 @@ jobs:
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_SWORD
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      #chat: ""
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       kill:
@@ -163,7 +165,8 @@ jobs:
       overlay: NOTCHED_10
       color: WHITE
     icon: NETHERITE_PICKAXE
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
@@ -277,7 +280,8 @@ jobs:
       overlay: NOTCHED_10
       color: YELLOW
     icon: NETHERITE_HOE
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
@@ -296,6 +300,14 @@ jobs:
         melon:
           exp: 1
           money: 0.01
+        #bamboo
+      harvest:
+        glow_berries:
+          exp: 1
+          money: 0.01
+        sweet_berries:
+          exp: 1
+          money: 0.01
   husbandry:
     name: "<gradient:#FF00BD:#AA4B00>Hayvancılık"
     bossbar:
@@ -304,15 +316,112 @@ jobs:
       overlay: NOTCHED_10
       color: PINK
     icon: LEAD
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       breed:
         pig:
           exp: 1
           money: 0.01
+        chicken:
+          exp: 1
+          money: 0.01
+        cow:
+          exp: 1
+          money: 0.01
+        sheep:
+          exp: 1
+          money: 0.01
+        horse:
+          exp: 1
+          money: 0.01
+        donkey:
+          exp: 1
+          money: 0.01
+        mule:
+          exp: 1
+          money: 0.01
+        llama:
+          exp: 1
+          money: 0.01
+        trader_llama:
+          exp: 1
+          money: 0.01
+        rabbit:
+          exp: 1
+          money: 0.01
+        fox:
+          exp: 1
+          money: 0.01
+        wolf:
+          exp: 1
+          money: 0.01
+        cat:
+          exp: 1
+          money: 0.01
+        turtle:
+          exp: 1
+          money: 0.01
+        bee:
+          exp: 1
+          money: 0.01
+        camel:
+          exp: 1
+          money: 0.01
+        panda:
+          exp: 1
+          money: 0.01
+        parrot:
+          exp: 1
+          money: 0.01
+        polar_bear:
+          exp: 1
+          money: 0.01
+        frog:
+          exp: 1
+          money: 0.01
+        axolotl:
+          exp: 1
+          money: 0.01
+        mooshroom:
+          exp: 1
+          money: 0.01
+        ocelot:
+          exp: 1
+          money: 0.01
+        strider:
+          exp: 1
+          money: 0.01
+        sniffer:
+          exp: 1
+          money: 0.01
       tame:
         wolf:
+          exp: 1
+          money: 0.01
+        cat:
+          exp: 1
+          money: 0.01
+        camel:
+          exp: 1
+          money: 0.01
+        horse:
+          exp: 1
+          money: 0.01
+        mule:
+          exp: 1
+          money: 0.01
+        donkey:
+          exp: 1
+          money: 0.01
+        trader_llama:
+          exp: 1
+          money: 0.01
+        llama:
+          exp: 1
+          money: 0.01
+        parrot:
           exp: 1
           money: 0.01
   fisher:
@@ -323,7 +432,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: FISHING_ROD
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       fish:
@@ -347,20 +457,102 @@ jobs:
       overlay: NOTCHED_10
       color: PURPLE
     icon: ENCHANTING_TABLE
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       enchant:
         1:
           exp: 1
-          money: 1
+          money: 0.1
         2:
           exp: 2
-          money: 2
+          money: 0.2
         3:
           exp: 3
+          money: 0.3
+        4:
+          exp: 4
+          money: 0.4
+        5:
+          exp: 5
+          money: 0.5
+        6:
+          exp: 6
+          money: 0.6
+        7:
+          exp: 7
+          money: 0.7
+        8:
+          exp: 8
+          money: 0.8
+        9:
+          exp: 9
+          money: 0.9
+        10:
+          exp: 10
+          money: 1
+        11:
+          exp: 11
+          money: 1.1
+        12:
+          exp: 12
+          money: 1.2
+        13:
+          exp: 13
+          money: 1.3
+        14:
+          exp: 14
+          money: 1.4
+        15:
+          exp: 15
+          money: 1.5
+        16:
+          exp: 16
+          money: 1.6
+        17:
+          exp: 17
+          money: 1.7
+        18:
+          exp: 18
+          money: 1.8
+        19:
+          exp: 19
+          money: 1.9
+        20:
+          exp: 20
+          money: 2
+        21:
+          exp: 21
+          money: 2.1
+        22:
+          exp: 22
+          money: 2.2
+        23:
+          exp: 23
+          money: 2.3
+        24:
+          exp: 24
+          money: 2.4
+        25:
+          exp: 25
+          money: 2.5
+        26:
+          exp: 26
+          money: 2.6
+        27:
+          exp: 27
+          money: 2.7
+        28:
+          exp: 28
+          money: 2.8
+        29:
+          exp: 29
+          money: 2.9
+        30:
+          exp: 30
           money: 3
-      anvil_enchant:
+      anvil_merge:
         enchanted_book:
           exp: 1.5
           money: 1.5
@@ -372,7 +564,8 @@ jobs:
       overlay: NOTCHED_10
       color: GREEN
     icon: NETHERITE_AXE
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
@@ -406,7 +599,12 @@ jobs:
         crimson_stem:
           exp: 1.5
           money: 0.15
-
+        cherry_log:
+          exp: 1
+          money: 0.1
+        pale_oak_log:
+          exp: 1
+          money: 0.1
   digger:
     name: "<gradient:#69A5E8:#AE69E8>Amelelik"
     bossbar:
@@ -415,7 +613,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: NETHERITE_SHOVEL
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       break:
@@ -460,7 +659,8 @@ jobs:
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_HELMET
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       kill:
@@ -475,7 +675,8 @@ jobs:
       overlay: NOTCHED_10
       color: GREEN
     icon: SHIELD
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       raid:
@@ -493,7 +694,8 @@ jobs:
       overlay: NOTCHED_10
       color: WHITE
     icon: CRAFTING_TABLE
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       craft:
@@ -547,7 +749,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: EMERALD
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       trade:
@@ -562,7 +765,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: SPYGLASS
-    levelup_sound: entity.player.levelup
+    levelup_message:
+      sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
     actions:
       generate_loot:
@@ -587,6 +791,9 @@ jobs:
         bastion_treasure:
           exp: 50
           money: 50
+        bastion_hoglin_stable:
+          exp: 25
+          money: 22
         buried_treasure:
           exp: 100
           money: 100
@@ -597,6 +804,9 @@ jobs:
           exp: 150
           money: 125
         jungle_temple:
+          exp: 75
+          money: 60
+        jungle_temple_dispenser:
           exp: 75
           money: 60
         pillager_outpost:
@@ -632,54 +842,96 @@ jobs:
         underwater_ruin_small:
           exp: 10
           money: 7
-        village_armorer:
+        village/village_armorer:
           exp: 5
           money: 1.5
-        village_butcher:
+        village/village_butcher:
           exp: 5
           money: 1.5
-        village_cartographer:
+        village/village_cartographer:
           exp: 5
           money: 1.5
-        village_desert_house:
+        village/village_desert_house:
           exp: 5
           money: 1.5
-        village_fisher:
+        village/village_fisher:
           exp: 5
           money: 1.5
-        village_fletcher:
+        village/village_fletcher:
           exp: 5
           money: 1.5
-        village_mason:
+        village/village_mason:
           exp: 5
           money: 1.5
-        village_plains_house:
+        village/village_plains_house:
           exp: 5
           money: 1.5
-        village_savanna_house:
+        village/village_savanna_house:
           exp: 5
           money: 1.5
-        village_shepherd:
+        village/village_shepherd:
           exp: 5
           money: 1.5
-        village_snowy_house:
+        village/village_snowy_house:
           exp: 5
           money: 1.5
-        village_taiga_house:
+        village/village_taiga_house:
           exp: 5
           money: 1.5
-        village_tannery:
+        village/village_tannery:
           exp: 5
           money: 1.5
-        village_temple:
+        village/village_temple:
           exp: 5
           money: 1.5
-        village_toolsmith:
+        village/village_toolsmith:
           exp: 5
           money: 1.5
-        village_weaponsmith:
+        village/village_weaponsmith:
           exp: 5
           money: 1.5
         woodland_mansion:
           exp: 5
           money: 1.5
+        nether_bridge:
+          exp: 5
+          money: 1.5
+        trial_chambers/corridor:
+          exp: 3
+          money: 0.15
+        trial_chambers/entrance:
+          exp: 5
+          money: 0.25
+        trial_chambers/intersection:
+          exp: 3
+          money: 0.15
+        trial_chambers/intersection_barrel:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward:
+          exp: 10
+          money: 1
+        trial_chambers/reward_common:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward_ominous:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward_ominous_common:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward_ominous_rare:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward_ominous_unique:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward_rare:
+          exp: 1
+          money: 0.1
+        trial_chambers/reward_unique:
+          exp: 1
+          money: 0.1
+        trial_chambers/supply:
+          exp: 1
+          money: 0.1

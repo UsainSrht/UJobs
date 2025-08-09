@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.*;
 import me.usainsrht.ujobs.utils.JobExpUtils;
+import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ import java.util.*;
 public class JobManager {
     private final UJobsPlugin plugin;
     private final Map<String, Job> jobs;
-    private final Map<Action, Set<Job>> actionJobMap;
+    private final Map<Action, Set<String>> actionJobMap;
 
     public JobManager(UJobsPlugin plugin) {
         this.plugin = plugin;
@@ -27,7 +28,6 @@ public class JobManager {
     }
 
     public void loadJobs() {
-        jobs.clear();
         actionJobMap.clear();
 
         ConfigurationSection jobsSection = plugin.getConfigManager().getJobsConfig()
@@ -38,20 +38,30 @@ public class JobManager {
             return;
         }
 
-        int jobCount = 0;
+        Map<String, Job> newJobs = new LinkedHashMap<>();
+
         for (String jobId : jobsSection.getKeys(false)) {
             try {
                 Job job = loadJob(jobId, jobsSection.getConfigurationSection(jobId));
                 if (job != null) {
-                    jobs.put(jobId, job);
-                    jobCount++;
+                    newJobs.put(jobId, job);
                 }
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to load job: " + jobId + " - " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
-        plugin.getLogger().info("Loaded " + jobCount + " jobs successfully!");
+        for (Job newJob : newJobs.values()) {
+            Job existingJob = jobs.get(newJob.getId());
+            if (existingJob != null) {
+                existingJob.update(newJob);
+            } else {
+                jobs.put(newJob.getId(), newJob);
+            }
+        }
+
+        plugin.getLogger().info("Loaded " + jobs.size() + " jobs successfully!");
     }
 
     private Job loadJob(String jobId, ConfigurationSection jobSection) {
@@ -72,19 +82,12 @@ public class JobManager {
 
         String levelEquation = jobSection.getString("level_equation", "<nextlevel>*<nextlevel>*5");
 
-        String soundString = jobSection.getString("levelup_sound", "ENTITY_PLAYER_LEVELUP");
-        Sound levelUpSound;
-        try {
-            levelUpSound = Sound.valueOf(soundString.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            plugin.getLogger().warning("Invalid sound for job " + jobId + ": " + soundString);
-            levelUpSound = Sound.ENTITY_PLAYER_LEVELUP;
-        }
+        YamlMessage levelUpMessage = new YamlMessage(jobSection.get("levelup_message", ""));
 
         // Load boss bar config
         Job.BossBarConfig bossBarConfig = loadBossBarConfig(jobSection.getConfigurationSection("bossbar"));
 
-        Job job = new Job(jobId, name, icon, levelEquation, levelUpSound, bossBarConfig);
+        Job job = new Job(jobId, name, icon, levelEquation, levelUpMessage, bossBarConfig);
 
         // Load actions
         ConfigurationSection actionsSection = jobSection.getConfigurationSection("actions");
@@ -143,11 +146,19 @@ public class JobManager {
                         JobInfoLine infoLine = new JobInfoLine(action, value, actionReward);
                         job.getInfoLines().add(infoLine);
 
-                        actionJobMap.computeIfAbsent(action, k -> new HashSet<>()).add(job);
+                        actionJobMap.computeIfAbsent(action, k -> new HashSet<>()).add(job.getId());
                     }
                 }
             }
         }
+    }
+
+    public Collection<Job> getJobsWithAction(Action action) {
+        return actionJobMap.getOrDefault(action, Collections.emptySet())
+                .stream()
+                .map(jobs::get)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     public void processAction(Player player, Action action, String value, Job job, int amount) {

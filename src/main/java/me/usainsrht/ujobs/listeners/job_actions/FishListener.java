@@ -30,7 +30,7 @@ public class FishListener implements Listener {
         String name = item.getItemStack().getType().name();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.FISH)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Material.FISH)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.FISH)) {
                 jobManager.processAction(player, BuiltInActions.Material.FISH, name, job, 1);
             }
         }

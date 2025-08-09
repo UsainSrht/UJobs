@@ -63,8 +63,8 @@ public class JobExpUtils {
 
     public static void handleLevelUp(Player player, Job job, int newLevel) {
         UJobsPlugin plugin = UJobsPlugin.instance;
-        // Play sound
-        player.playSound(player.getLocation(), job.getLevelUpSound(), 1.0f, 1.0f);
+
+        if (job.getLevelEquation() != null) MessageUtil.send(player, job.getLevelUpMessage());
 
         // Show level up boss bar animation
         showLevelUpAnimation(player, job, newLevel);

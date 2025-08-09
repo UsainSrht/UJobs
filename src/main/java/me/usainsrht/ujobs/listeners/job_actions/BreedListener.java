@@ -26,7 +26,7 @@ public class BreedListener implements Listener {
         EntityType entityType = e.getEntityType();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.BREED)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Entity.BREED)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Entity.BREED)) {
                 jobManager.processAction(player, BuiltInActions.Entity.BREED, entityType.name(), job, 1);
             }
         }

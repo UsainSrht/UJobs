@@ -29,7 +29,7 @@ public class BreakListener implements Listener {
         } else value = block.getType().name();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Material.BREAK)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.BREAK)) {
                 jobManager.processAction(e.getPlayer(), BuiltInActions.Material.BREAK, value, job, 1);
             }
         }

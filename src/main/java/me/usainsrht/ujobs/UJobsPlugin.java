@@ -121,6 +121,9 @@ public final class UJobsPlugin extends JavaPlugin {
         // job listeners
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
             getServer().getPluginManager().registerEvents(new BreakListener(jobManager), this);
+            if (getServer().getPluginManager().isPluginEnabled("UltimateTimber")) {
+                getServer().getPluginManager().registerEvents(new TreeFallListener(jobManager), this);
+            }
         }
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {
             getServer().getPluginManager().registerEvents(new PlaceListener(jobManager), this);
@@ -149,11 +152,14 @@ public final class UJobsPlugin extends JavaPlugin {
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.TRADE)) {
             getServer().getPluginManager().registerEvents(new TradeListener(jobManager), this);
         }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.ANVIL_ENCHANT)) {
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.ANVIL_MERGE)) {
             getServer().getPluginManager().registerEvents(new AnvilEnchantListener(jobManager), this);
         }
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.CRAFT)) {
             getServer().getPluginManager().registerEvents(new CraftListener(jobManager), this);
+        }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.HARVEST)) {
+            getServer().getPluginManager().registerEvents(new HarvestListener(jobManager), this);
         }
 
         LifecycleEventManager<Plugin> manager = this.getLifecycleManager();

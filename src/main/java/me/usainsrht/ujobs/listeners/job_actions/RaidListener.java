@@ -27,7 +27,7 @@ public class RaidListener implements Listener {
         Raid raid = e.getRaid();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.RAID)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Special.RAID)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.RAID)) {
                 for (UUID uuid : raid.getHeroes()) {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player == null || !player.isOnline()) continue;
@@ -43,7 +43,7 @@ public class RaidListener implements Listener {
         Raid raid = e.getRaid();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.RAID)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Special.RAID)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.RAID)) {
                 for (UUID uuid : raid.getHeroes()) {
                     Player player = Bukkit.getPlayer(uuid);
                     if (player == null || !player.isOnline()) continue;

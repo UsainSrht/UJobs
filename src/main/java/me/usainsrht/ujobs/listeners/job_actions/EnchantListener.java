@@ -24,7 +24,7 @@ public class EnchantListener  implements Listener {
         String value = String.valueOf(e.getExpLevelCost());
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.ENCHANT)) {
-            for (Job job : jobManager.getActionJobMap().get(BuiltInActions.Special.ENCHANT)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.ENCHANT)) {
                 jobManager.processAction(player, BuiltInActions.Special.ENCHANT, value, job, 1);
             }
         }
