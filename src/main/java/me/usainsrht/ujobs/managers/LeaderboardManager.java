@@ -182,7 +182,7 @@ public class LeaderboardManager {
             placeholderSet.add(Placeholder.component("displayname", player.isOnline() ? player.getPlayer().displayName() : Component.text(player.getName())));
             placeholderSet.add(Placeholder.unparsed("name", player.getName()));
             placeholderSet.add(Formatter.number("level", level));
-            placeholderSet.add(Formatter.number("position", oneHigher));
+            placeholderSet.add(Formatter.number("position", oneHigher+1));
             placeholderSet.add(Placeholder.component("job", job.getName()));
             placeholderSet.add(Placeholder.styling("primary", job.getName().children().getFirst().color()));
             placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));

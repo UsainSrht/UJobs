@@ -88,7 +88,7 @@ messages:
   page_turn:
     sound: item.book.page_turn
   leaderboard_take_lead:
-    chat: "<displayname> <gray>reached <primary><level> <gray>level in <job> skill and took <secondary><bold>1st</bold><gray> place from <opponentdisplayname><gray>."
+    chat: "<displayname> <gray>reached <primary><level> <gray>level in <job> skill and took <secondary><bold>1st</bold><gray> place from <opponent_displayname><gray>."
     sound: entity.ravager.celebrate
   leaderboard_get_in_top_10:
     chat: "<displayname> <gray>reached <primary><level> <gray>level in <job> skill and entered the top <secondary><bold>10</bold><gray>."
