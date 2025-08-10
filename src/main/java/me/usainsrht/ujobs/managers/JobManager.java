@@ -101,17 +101,17 @@ public class JobManager {
     private Job.BossBarConfig loadBossBarConfig(ConfigurationSection bossBarSection) {
         if (bossBarSection == null) {
             return new Job.BossBarConfig(
-                    "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>",
-                    "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!",
+                    "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>",
+                    "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill.",
                     BossBar.Color.BLUE,
                     BossBar.Overlay.NOTCHED_10
             );
         }
 
         String titleTemplate = bossBarSection.getString("title",
-                "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<incomeexp>xp <exp>/<nextexp>");
+                "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>");
         String levelUpTemplate = bossBarSection.getString("levelup",
-                "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!");
+                "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill.");
 
         BossBar.Color color;
         try {

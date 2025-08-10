@@ -150,9 +150,6 @@ public class LeaderboardGUI implements JobGUI {
         placeholderSet.add(Placeholder.styling("primary", job.getName().children().getFirst().color()));
         placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
 
-        // Time placeholder (placeholder implementation)
-        placeholderSet.add(Placeholder.unparsed("time", "1h"));
-
         // Top list placeholders
         UUID[] topPlayers = plugin.getLeaderboardManager().getLeaderboardJobCache().get(job);
         for (int s = 1; s <= listAmount; s++) {

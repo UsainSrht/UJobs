@@ -12,7 +12,6 @@ import me.usainsrht.ujobs.listeners.SaveListener;
 import me.usainsrht.ujobs.listeners.job_actions.*;
 import me.usainsrht.ujobs.managers.*;
 import me.usainsrht.ujobs.models.BuiltInActions;
-import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.storage.PDCStorage;
 import me.usainsrht.ujobs.storage.Storage;
 import me.usainsrht.ujobs.yaml.YamlCommand;
@@ -153,7 +152,7 @@ public final class UJobsPlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new TradeListener(jobManager), this);
         }
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.ANVIL_MERGE)) {
-            getServer().getPluginManager().registerEvents(new AnvilEnchantListener(jobManager), this);
+            getServer().getPluginManager().registerEvents(new AnvilMergeListener(jobManager), this);
         }
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.CRAFT)) {
             getServer().getPluginManager().registerEvents(new CraftListener(jobManager), this);

@@ -1,9 +1,9 @@
 jobs:
   hunter:
-    name: "<gradient:#FF0000:#A20000>Avcılık"
+    name: "<gradient:#FF0000:#A20000>Hunter"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_SWORD
@@ -158,10 +158,10 @@ jobs:
           exp: 2.5
           money: 0.15
   miner:
-    name: "<gradient:#9B9B9B:#646464>Madencilik"
+    name: "<gradient:#9B9B9B:#646464>Miner"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: WHITE
     icon: NETHERITE_PICKAXE
@@ -273,10 +273,10 @@ jobs:
           exp: 0.1
           money: 0.01
   farmer:
-    name: "<gradient:#FFD500:#FF9B00>Çiftçilik"
+    name: "<gradient:#FFD500:#FF9B00>Farmer"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: YELLOW
     icon: NETHERITE_HOE
@@ -309,10 +309,10 @@ jobs:
           exp: 1
           money: 0.01
   husbandry:
-    name: "<gradient:#FF00BD:#AA4B00>Hayvancılık"
+    name: "<gradient:#FF00BD:#AA4B00>Husbandry"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: PINK
     icon: LEAD
@@ -425,10 +425,10 @@ jobs:
           exp: 1
           money: 0.01
   fisher:
-    name: "<gradient:#00D8FF:#0A75C8>Balıkçılık"
+    name: "<gradient:#00D8FF:#0A75C8>Fisher"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: BLUE
     icon: FISHING_ROD
@@ -450,10 +450,10 @@ jobs:
           exp: 2.5
           money: 2.5
   witcher:
-    name: "<gradient:#FF00FB:#9B00FF>Büyücülük"
+    name: "<gradient:#FF00FB:#9B00FF>Witcher"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: PURPLE
     icon: ENCHANTING_TABLE
@@ -557,10 +557,10 @@ jobs:
           exp: 1.5
           money: 1.5
   lumberjack:
-    name: "<gradient:#CB7800:#00B503>Odunculuk"
+    name: "<gradient:#CB7800:#00B503>Lumberjack"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: GREEN
     icon: NETHERITE_AXE
@@ -606,10 +606,10 @@ jobs:
           exp: 1
           money: 0.1
   digger:
-    name: "<gradient:#69A5E8:#AE69E8>Amelelik"
+    name: "<gradient:#69A5E8:#AE69E8>Digger"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: BLUE
     icon: NETHERITE_SHOVEL
@@ -652,10 +652,10 @@ jobs:
           exp: 2
           money: 0.02
   gladiator:
-    name: "<gradient:#FF0000:#FFFF00>Gladyatörlük"
+    name: "<gradient:#FF0000:#FFFF00>Gladiator"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_HELMET
@@ -668,10 +668,10 @@ jobs:
           exp: 1
           money: 0.01
   guardian:
-    name: "<gradient:#1FFF00:#769072>Muhafızlık"
+    name: "<gradient:#1FFF00:#769072>Guardian"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: GREEN
     icon: SHIELD
@@ -687,10 +687,10 @@ jobs:
           exp: 1
           money: 0.01
   producer:
-    name: "<gradient:#A26238:#AF8D5B>Üretkenlik"
+    name: "<gradient:#A26238:#AF8D5B>Producer"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: WHITE
     icon: CRAFTING_TABLE
@@ -742,10 +742,10 @@ jobs:
           exp: 0.2
           money: 0.02
   trader:
-    name: "<gradient:#0CFF00:#F7FF00>Tüccarlık"
+    name: "<gradient:#0CFF00:#F7FF00>Trader"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: BLUE
     icon: EMERALD
@@ -758,10 +758,10 @@ jobs:
           exp: 1
           money: 0.1
   traveler:
-    name: "<gradient:#00AAFF:#00FF13>Gezginlik"
+    name: "<gradient:#00AAFF:#00FF13>Traveler"
     bossbar:
-      title: "<yellow><level> <gray>seviye <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
-      levelup: "<gradient:#5DFF00:#E8FF00:{phase}><job> yeteneğinde <bold><level></bold>. seviyeye yükseldin!"
+      title: "<yellow><level> <gray>level <job> <gradient:#6D6666:#938B8B:#777676>+<gained_exp><symbol_exp> <exp>/<next_exp>"
+      levelup: "<gradient:#5DFF00:#E8FF00:{phase}>You have reached <bold><level></bold>. level in <job> skill."
       overlay: NOTCHED_10
       color: BLUE
     icon: SPYGLASS

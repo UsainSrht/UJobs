@@ -147,6 +147,9 @@ public class LeaderboardManager {
                 oneHigher--;
             }
         } else {
+
+            leaderboardPlayerCache.get(uuid).getLeaderboardStats().get(job).setLevel(level);
+
             oneHigher = position - 1;
             if (oneHigher < 0) return;
             opponent = getPlayerByPosition(oneHigher, job);
@@ -154,13 +157,7 @@ public class LeaderboardManager {
 
         if (opponent == null) return;
 
-        if (opponent.equals(uuid)) {
-
-            //todo if you are on the leaderboard and levelup, it still doesnt update your levelup if you dont pass anyone
-            leaderboardPlayerCache.get(uuid).getLeaderboardStats().get(job).setLevel(level);
-
-            return;
-        }
+        if (opponent.equals(uuid)) return;
 
         int opponentLevel = leaderboardPlayerCache.get(opponent).getLeaderboardStats().get(job).getLevel();
         if (level > opponentLevel) {
@@ -203,7 +200,6 @@ public class LeaderboardManager {
 
             save();
         } else {
-            //todo if same level with opponent update his level on leaderboard
             //check if one position below opponent is in calculate list and is empty
             int belowOpponent = oneHigher + 1;
             if (belowOpponent < calculateTop && belowOpponent > 0) {
