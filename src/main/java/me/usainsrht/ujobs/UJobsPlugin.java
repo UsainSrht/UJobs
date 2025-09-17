@@ -171,11 +171,13 @@ public final class UJobsPlugin extends JavaPlugin {
     }
 
     private void setupEconomy() {
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return;
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+            if (rsp == null) {
+                return;
+            }
+            economy = rsp.getProvider();
         }
-        economy = rsp.getProvider();
     }
 
     private void startLeaderboardTimer() {
