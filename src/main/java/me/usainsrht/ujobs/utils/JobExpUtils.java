@@ -49,7 +49,7 @@ public class JobExpUtils {
         }
 
         // Add money
-        if (moneyGain > 0) {
+        if (moneyGain > 0 && plugin.getEconomy() != null) {
             plugin.getEconomy().depositPlayer(player, moneyGain);
             stats.setTotalMoney(stats.getTotalMoney() + moneyGain);
         }

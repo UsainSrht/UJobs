@@ -48,12 +48,7 @@ public final class UJobsPlugin extends JavaPlugin {
         // Initialize Adventure API
         this.miniMessage = MiniMessage.miniMessage();
 
-        // Setup Vault Economy
-        if (!setupEconomy()) {
-            getLogger().severe("Disabled due to no Vault dependency found!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        setupEconomy();
 
         // Setup storage
         this.storage = new PDCStorage(this);
@@ -78,8 +73,8 @@ public final class UJobsPlugin extends JavaPlugin {
             storage.save();
         }
 
-        leaderboardManager.save(); //saves to cache
-        configManager.saveLeaderboard(); //writes it
+        if (leaderboardManager != null) leaderboardManager.save(); //saves to cache
+        if (configManager != null) configManager.saveLeaderboard(); //writes it
 
         // Cancel all boss bars
         if (bossBarManager != null) {
@@ -175,16 +170,12 @@ public final class UJobsPlugin extends JavaPlugin {
         });
     }
 
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
+    private void setupEconomy() {
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
-            return false;
+            return;
         }
         economy = rsp.getProvider();
-        return economy != null;
     }
 
     private void startLeaderboardTimer() {
