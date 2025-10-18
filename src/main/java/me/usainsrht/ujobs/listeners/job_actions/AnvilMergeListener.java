@@ -16,11 +16,14 @@ public class AnvilMergeListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAnvilMerge(InventoryClickEvent e) {
+
         if (e.getInventory().getType() != org.bukkit.event.inventory.InventoryType.ANVIL) return;
 
         if (e.getSlot() != 2) return; // Check if the clicked slot is the output slot
 
         if (!(e.getWhoClicked() instanceof org.bukkit.entity.Player player)) return;
+
+        if (jobManager.shouldIgnore(player)) return;
 
         //todo anvil merge success checks
 

@@ -21,6 +21,8 @@ public class EnchantListener  implements Listener {
     public void onEnchant(EnchantItemEvent e) {
         Player player = e.getEnchanter();
 
+        if (jobManager.shouldIgnore(player)) return;
+
         String value = String.valueOf(e.getExpLevelCost());
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.ENCHANT)) {

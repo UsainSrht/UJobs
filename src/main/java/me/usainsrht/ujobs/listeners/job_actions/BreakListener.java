@@ -21,6 +21,8 @@ public class BreakListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent e) {
+        if (jobManager.shouldIgnore(e.getPlayer())) return;
+
         Block block = e.getBlock();
         BlockData blockData = block.getBlockData();
         String value;

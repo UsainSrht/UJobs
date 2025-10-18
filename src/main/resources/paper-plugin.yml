@@ -11,6 +11,11 @@ dependencies:
       load: BEFORE
       join-classpath: true
 
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
     Citizens:
       required: false
       load: BEFORE
@@ -35,6 +40,10 @@ dependencies:
 
 
     UltimateTimber:
+      required: false
+      load: BEFORE
+      join-classpath: true
+    UTimber:
       required: false
       load: BEFORE
       join-classpath: true

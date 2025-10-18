@@ -16,6 +16,8 @@ public class PlaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent e) {
+        if (jobManager.shouldIgnore(e.getPlayer())) return;
 
+        //todo place action
     }
 }

@@ -21,6 +21,8 @@ public class CraftListener  implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraft(CraftItemEvent e) {
+        if (jobManager.shouldIgnore((Player) e.getWhoClicked())) return;
+
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.CRAFT)) {
 
             Player player = (Player) e.getWhoClicked();

@@ -1,4 +1,4 @@
-package me.usainsrht.ujobs.listeners.job_actions;
+package me.usainsrht.ujobs.listeners.job_actions.timber;
 
 import com.songoda.ultimatetimber.events.TreeFallEvent;
 import com.songoda.ultimatetimber.tree.TreeBlockSet;

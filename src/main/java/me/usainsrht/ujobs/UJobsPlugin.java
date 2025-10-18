@@ -10,8 +10,10 @@ import me.usainsrht.ujobs.listeners.JoinListener;
 import me.usainsrht.ujobs.listeners.QuitListener;
 import me.usainsrht.ujobs.listeners.SaveListener;
 import me.usainsrht.ujobs.listeners.job_actions.*;
+import me.usainsrht.ujobs.listeners.job_actions.timber.TreeFallListener;
 import me.usainsrht.ujobs.managers.*;
 import me.usainsrht.ujobs.models.BuiltInActions;
+import me.usainsrht.ujobs.placeholders.JobPlaceholders;
 import me.usainsrht.ujobs.storage.PDCStorage;
 import me.usainsrht.ujobs.storage.Storage;
 import me.usainsrht.ujobs.yaml.YamlCommand;
@@ -50,17 +52,17 @@ public final class UJobsPlugin extends JavaPlugin {
 
         setupEconomy();
 
-        // Setup storage
         this.storage = new PDCStorage(this);
 
-        // Initialize managers
         initializeManagers();
 
-        // Register events and commands
         registerEventsAndCommands();
 
         // Start leaderboard calculation timer
+        //currently disabled
         startLeaderboardTimer();
+
+        registerPlaceholders();
 
         getLogger().info("UJobs has been enabled successfully!");
     }
@@ -163,7 +165,7 @@ public final class UJobsPlugin extends JavaPlugin {
                     .name(getConfig().getString("command.name", "ujobs"))
                     .description(getConfig().getString("command.description", "UJobs main command"))
                     .aliases(getConfig().getStringList("command.aliases"))
-                    .permission(getConfig().getString("command.permission", "ujobs.command.main"))
+                    .permission(getConfig().getString("command.permission"))
                     .permissionMessage(new YamlMessage(getConfig().get("command.permission_message")))
                     .build();
             commands.register(getPluginMeta(), MainCommand.create(this, mainCommand), mainCommand.getDescription(), mainCommand.getAliases());
@@ -177,6 +179,12 @@ public final class UJobsPlugin extends JavaPlugin {
                 return;
             }
             economy = rsp.getProvider();
+        }
+    }
+
+    private void registerPlaceholders() {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new JobPlaceholders(this).register();
         }
     }
 

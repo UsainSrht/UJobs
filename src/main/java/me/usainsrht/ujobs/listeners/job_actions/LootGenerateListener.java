@@ -21,6 +21,8 @@ public class LootGenerateListener implements Listener {
     public void onLootGenerate(LootGenerateEvent e) {
         if (!(e.getEntity() instanceof Player player)) return;
 
+        if (jobManager.shouldIgnore(player)) return;
+
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.GENERATE_LOOT)) {
             String lootTable = e.getLootTable().key().value().replace("chests/", "");
             for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.GENERATE_LOOT)) {

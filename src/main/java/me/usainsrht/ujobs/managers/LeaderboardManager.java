@@ -125,6 +125,20 @@ public class LeaderboardManager {
         return stats.getPosition();
     }
 
+    public int getLevel(UUID uuid, Job job) {
+        PlayerLeaderboardData data = leaderboardPlayerCache.get(uuid);
+        if (data == null) return -1;
+        PlayerLeaderboardData.LeaderboardStats stats = data.getLeaderboardStats().get(job);
+        if (stats == null) return -1;
+        return stats.getLevel();
+    }
+
+    public PlayerLeaderboardData.LeaderboardStats getStats(UUID uuid, Job job) {
+        PlayerLeaderboardData data = leaderboardPlayerCache.get(uuid);
+        if (data == null) return null;
+        return data.getLeaderboardStats().get(job);
+    }
+
     public UUID getPlayerByPosition(int position, Job job) {
         if (position < 0) return null;
         UUID[] leaderboard = leaderboardJobCache.get(job);

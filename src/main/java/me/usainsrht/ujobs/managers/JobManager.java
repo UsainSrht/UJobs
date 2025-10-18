@@ -171,4 +171,10 @@ public class JobManager {
         JobExpUtils.processJobExp(player, job, reward, amount);
 
     }
+
+    public boolean shouldIgnore(Player player) {
+        if (!plugin.getConfig().isSet("ignored_gamemodes")) return false;
+        List<String> ignoredGamemodes = plugin.getConfig().getStringList("ignored_gamemodes");
+        return ignoredGamemodes.contains(player.getGameMode().toString());
+    }
 }

@@ -22,6 +22,8 @@ public class KillListener implements Listener {
     public void onKill(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Player player)) return;
 
+        if (jobManager.shouldIgnore(player)) return;
+
         if (!(e.getEntity() instanceof Damageable damageable)) return;
 
         if (e.getFinalDamage() >= damageable.getHealth()) {

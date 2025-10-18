@@ -72,9 +72,15 @@ gui:
       material: ARROW
       name: "<yellow>->"
 
+# players with these gamemodes will not gain exp/money from jobs
+ignored_gamemodes:
+  - SPECTATOR
+  #- CREATIVE
 
 command:
   name: "jobs"
+  #if permission is omitted, everyone can use the command
+  #permission: "ujobs.command"
   description: "main command for Jobs"
   aliases:
     - "job"

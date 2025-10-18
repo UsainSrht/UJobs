@@ -22,6 +22,8 @@ public class TameListener implements Listener {
     public void onTame(EntityTameEvent e) {
         if (!(e.getOwner() instanceof Player player)) return;
 
+        if (jobManager.shouldIgnore(player)) return;
+
         LivingEntity entity = e.getEntity();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.TAME)) {

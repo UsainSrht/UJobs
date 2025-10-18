@@ -22,6 +22,8 @@ public class HarvestListener implements Listener {
     public void onBreak(PlayerHarvestBlockEvent e) {
         Player player = e.getPlayer();
 
+        if (jobManager.shouldIgnore(player)) return;
+
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.HARVEST)) {
             for (ItemStack itemStack : e.getItemsHarvested()) {
                 String value = itemStack.getType().name();

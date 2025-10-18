@@ -23,6 +23,8 @@ public class BreedListener implements Listener {
     public void onBreed(EntityBreedEvent e) {
         if (!(e.getBreeder() instanceof Player player)) return;
 
+        if (jobManager.shouldIgnore(player)) return;
+
         EntityType entityType = e.getEntityType();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.BREED)) {

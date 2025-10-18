@@ -24,6 +24,8 @@ public class FishListener implements Listener {
     public void onFish(PlayerFishEvent e) {
         Player player = e.getPlayer();
 
+        if (jobManager.shouldIgnore(player)) return;
+
         if (e.getState() != PlayerFishEvent.State.CAUGHT_FISH) return;
 
         if (!(e.getCaught() instanceof Item item)) return;

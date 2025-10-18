@@ -7,7 +7,7 @@ public class SmeltListener implements Listener {
 
 
     public void onSmelt(FurnaceExtractEvent e) {
-
+        //todo smelt action
     }
 
 }

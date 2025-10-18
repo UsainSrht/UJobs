@@ -23,6 +23,8 @@ public class TradeListener implements Listener {
     public void onTrade(PlayerTradeEvent e) {
         Player player = e.getPlayer();
 
+        if (jobManager.shouldIgnore(player)) return;
+
         MerchantRecipe trade = e.getTrade();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.TRADE)) {
