@@ -7,8 +7,14 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JobExpUtils {
 
@@ -64,7 +70,27 @@ public class JobExpUtils {
     public static void handleLevelUp(Player player, Job job, int newLevel) {
         UJobsPlugin plugin = UJobsPlugin.instance;
 
-        if (job.getLevelEquation() != null) MessageUtil.send(player, job.getLevelUpMessage());
+        if (job.getLevelEquation() != null) MessageUtil.send(player, job.getLevelUpMessage(),
+                Placeholder.unparsed("player", player.getName()),
+                Formatter.number("level", newLevel));
+
+        for (String cmd : job.getLevelUpCommands()) {
+            String parsedCmd = cmd
+                    .replace("<player>", player.getName())
+                    .replace("<level>", String.valueOf(newLevel));
+            List<String> all = new ArrayList<>();
+            Matcher m = Pattern.compile("([0-9()+\\-*/.]+)").matcher(parsedCmd);
+            while (m.find()) all.add(m.group(1));
+            for (String math : all) {
+                try {
+                    double result = MathUtil.eval(math);
+                    parsedCmd = parsedCmd.replace(math, String.valueOf(result));
+                } catch (Exception e) {
+                    // Ignore invalid math expressions
+                }
+            }
+            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), parsedCmd);
+        }
 
         // Show level up boss bar animation
         showLevelUpAnimation(player, job, newLevel);

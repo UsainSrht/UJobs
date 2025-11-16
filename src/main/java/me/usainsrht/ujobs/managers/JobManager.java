@@ -84,10 +84,12 @@ public class JobManager {
 
         YamlMessage levelUpMessage = new YamlMessage(jobSection.get("levelup_message", ""));
 
+        List<String> levelUpCommands = jobSection.getStringList("levelup_commands");
+
         // Load boss bar config
         Job.BossBarConfig bossBarConfig = loadBossBarConfig(jobSection.getConfigurationSection("bossbar"));
 
-        Job job = new Job(jobId, name, icon, levelEquation, levelUpMessage, bossBarConfig);
+        Job job = new Job(jobId, name, icon, levelEquation, levelUpMessage, levelUpCommands, bossBarConfig);
 
         // Load actions
         ConfigurationSection actionsSection = jobSection.getConfigurationSection("actions");

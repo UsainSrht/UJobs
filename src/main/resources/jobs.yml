@@ -7,6 +7,14 @@ jobs:
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_SWORD
+    #commands that will be executed by console when player levels up
+    #<player> player's name, <level> new level, math equations available
+    levelup_commands:
+      #- "money give <player> <level>*10"
+    #available message types: title, actionbar, sound, chat
+    #all can be used at the same time
+    #chat and sound can also be list
+    #<player> player's name, <level> new level
     levelup_message:
       #chat: ""
       sound: entity.player.levelup
@@ -165,6 +173,8 @@ jobs:
       overlay: NOTCHED_10
       color: WHITE
     icon: NETHERITE_PICKAXE
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -280,6 +290,8 @@ jobs:
       overlay: NOTCHED_10
       color: YELLOW
     icon: NETHERITE_HOE
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -316,6 +328,8 @@ jobs:
       overlay: NOTCHED_10
       color: PINK
     icon: LEAD
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -432,6 +446,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: FISHING_ROD
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -457,6 +473,8 @@ jobs:
       overlay: NOTCHED_10
       color: PURPLE
     icon: ENCHANTING_TABLE
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -564,6 +582,8 @@ jobs:
       overlay: NOTCHED_10
       color: GREEN
     icon: NETHERITE_AXE
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -613,6 +633,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: NETHERITE_SHOVEL
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -659,6 +681,8 @@ jobs:
       overlay: NOTCHED_10
       color: RED
     icon: NETHERITE_HELMET
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -675,6 +699,8 @@ jobs:
       overlay: NOTCHED_10
       color: GREEN
     icon: SHIELD
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -694,6 +720,8 @@ jobs:
       overlay: NOTCHED_10
       color: WHITE
     icon: CRAFTING_TABLE
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -749,6 +777,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: EMERALD
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
@@ -765,6 +795,8 @@ jobs:
       overlay: NOTCHED_10
       color: BLUE
     icon: SPYGLASS
+    levelup_commands:
+    #- "money give <player> <level>*10"
     levelup_message:
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"

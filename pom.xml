@@ -6,7 +6,7 @@
 
     <groupId>me.usainsrht</groupId>
     <artifactId>UJobs</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>UJobs</name>
@@ -46,7 +46,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
                 <configuration>
-                    <outputDirectory>H:\Minecraft Servers\backend\plugins</outputDirectory>
+                    <outputDirectory>C:\Users\Usain\minecraft servers\latest\plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
@@ -81,13 +81,13 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <version>1.21.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
         <!-- <dependency>
@@ -111,7 +111,7 @@
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>ultimatetimber</artifactId>
-            <systemPath>${project.basedir}/ultimate-timber_v4_5_0.jar</systemPath>
+            <systemPath>${project.basedir}/ultimatetimber-4.6.0.jar</systemPath>
             <version>4.5.0</version>
             <scope>system</scope>
         </dependency>

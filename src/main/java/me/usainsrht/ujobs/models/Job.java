@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.usainsrht.ujobs.utils.MathUtil;
 import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 
@@ -20,17 +19,19 @@ public class Job {
     private Material icon;
     private String levelEquation;
     private YamlMessage levelUpMessage;
+    private List<String> levelUpCommands;
     private BossBarConfig bossBarConfig;
     private final Map<Action, Map<String, ActionReward>> actions;
     private final List<JobInfoLine> infoLines;
 
     public Job(String id, Component name, Material icon, String levelEquation,
-               YamlMessage levelUpMessage, BossBarConfig bossBarConfig) {
+               YamlMessage levelUpMessage, List<String> levelUpCommands, BossBarConfig bossBarConfig) {
         this.id = id;
         this.name = name;
         this.icon = icon;
         this.levelEquation = levelEquation;
         this.levelUpMessage = levelUpMessage;
+        this.levelUpCommands = levelUpCommands;
         this.bossBarConfig = bossBarConfig;
         this.actions = new HashMap<>();
         this.infoLines = new ArrayList<>();
@@ -42,6 +43,7 @@ public class Job {
         this.name = otherJobInstance.name;
         this.icon = otherJobInstance.icon;
         this.levelEquation = otherJobInstance.levelEquation;
+        this.levelUpCommands = otherJobInstance.levelUpCommands;
         this.levelUpMessage = otherJobInstance.levelUpMessage;
         this.bossBarConfig = otherJobInstance.bossBarConfig;
         this.actions.clear();

@@ -77,6 +77,11 @@ ignored_gamemodes:
   - SPECTATOR
   #- CREATIVE
 
+# materials that will not count when mined with a tool with silk touch.
+silktouch_blacklist:
+  - DIAMOND_ORE
+  - DEEPSLATE_DIAMOND_ORE
+
 command:
   name: "jobs"
   #if permission is omitted, everyone can use the command
