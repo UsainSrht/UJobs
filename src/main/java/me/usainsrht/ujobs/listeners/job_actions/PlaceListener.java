@@ -1,6 +1,12 @@
 package me.usainsrht.ujobs.listeners.job_actions;
 
 import me.usainsrht.ujobs.managers.JobManager;
+import me.usainsrht.ujobs.models.BuiltInActions;
+import me.usainsrht.ujobs.models.Job;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -8,7 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class PlaceListener implements Listener {
 
-    JobManager jobManager;
+    private final JobManager jobManager;
 
     public PlaceListener(JobManager jobManager) {
         this.jobManager = jobManager;
@@ -16,8 +22,25 @@ public class PlaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent e) {
-        if (jobManager.shouldIgnore(e.getPlayer())) return;
+        Player player = e.getPlayer();
+        if (jobManager.shouldIgnore(player)) return;
 
-        //todo place action
+        Block block = e.getBlock();
+        BlockData blockData = block.getBlockData();
+
+        // Build the value key for the job system (like BreakListener)
+        String value;
+        if (blockData instanceof Ageable ageable) {
+            value = block.getType().name() + ageable.getAge();
+        } else {
+            value = block.getType().name();
+        }
+
+        // Check if any jobs have PLACE actions
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {
+            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.PLACE)) {
+                jobManager.processAction(player, BuiltInActions.Material.PLACE, value, job, 1);
+            }
+        }
     }
 }
