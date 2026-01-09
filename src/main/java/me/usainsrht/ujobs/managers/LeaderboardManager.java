@@ -58,6 +58,48 @@ public class LeaderboardManager {
                 leaderboardJobCache.get(job)[position] = uuid;
             });
         });
+
+        // Recompute ordered arrays from YAML-loaded stats to ensure positions reflect levels
+        int calculateTop = plugin.getConfig().getInt("leaderboard.calculate_top", 100);
+        for (Job job : plugin.getJobManager().getJobs().values()) {
+            UUID[] ordered = new UUID[Math.max(calculateTop, 100)];
+            // collect players who have stats for this job
+            List<Map.Entry<UUID, PlayerLeaderboardData.LeaderboardStats>> entries = new ArrayList<>();
+            for (Map.Entry<UUID, PlayerLeaderboardData> e : leaderboardPlayerCache.entrySet()) {
+                PlayerLeaderboardData.LeaderboardStats stats = e.getValue().getLeaderboardStats().get(job);
+                if (stats != null) entries.add(new AbstractMap.SimpleEntry<>(e.getKey(), stats));
+            }
+            // sort by level desc, then by stored position asc for stability
+            entries.sort((a, b) -> {
+                int levelCmp = Integer.compare(b.getValue().getLevel(), a.getValue().getLevel());
+                if (levelCmp != 0) return levelCmp;
+                return Integer.compare(a.getValue().getPosition(), b.getValue().getPosition());
+            });
+
+            int idx = 0;
+            for (Map.Entry<UUID, PlayerLeaderboardData.LeaderboardStats> e : entries) {
+                if (idx >= ordered.length) break;
+                ordered[idx] = e.getKey();
+                // update cached position to match sorted index
+                leaderboardPlayerCache.computeIfAbsent(e.getKey(), PlayerLeaderboardData::new)
+                        .getLeaderboardStats().put(job, new PlayerLeaderboardData.LeaderboardStats(idx, e.getValue().getLevel()));
+                idx++;
+            }
+
+            leaderboardJobCache.put(job, ordered);
+        }
+
+        // Rebuild leaderboards from storage only if storage cache is already populated.
+        // PDCStorage cache is populated asynchronously as players join, so avoid overwriting
+        // YAML-loaded leaderboards with an empty in-memory cache during startup.
+        if (plugin.getStorage() instanceof PDCStorage pdcStorage) {
+            if (!pdcStorage.getCache().isEmpty()) {
+                for (Job job : plugin.getJobManager().getJobs().values()) {
+                    UUID[] rebuilt = createLeaderboard(job);
+                    if (rebuilt != null) leaderboardJobCache.put(job, rebuilt);
+                }
+            }
+        }
     }
 
     public void save() {
@@ -110,6 +152,18 @@ public class LeaderboardManager {
                     leaderboardPlayerCache.computeIfAbsent(playerJobData.getUuid(), PlayerLeaderboardData::new)
                             .getLeaderboardStats().put(job, new PlayerLeaderboardData.LeaderboardStats(insertIndex, level));
                 }
+            }
+
+            // Ensure leaderboard cache positions/levels are consistent for all entries
+            for (int i = 0; i < leaderboard.length; i++) {
+                UUID entry = leaderboard[i];
+                if (entry == null) continue;
+                PlayerJobData pjd = pdcStorage.getCache().get(entry);
+                int lvl = -1;
+                if (pjd != null) lvl = pjd.getJobStats(job.getId()).getLevel();
+                // create or update the cached stats for this job
+                leaderboardPlayerCache.computeIfAbsent(entry, PlayerLeaderboardData::new)
+                        .getLeaderboardStats().put(job, new PlayerLeaderboardData.LeaderboardStats(i, lvl));
             }
 
             return leaderboard;
