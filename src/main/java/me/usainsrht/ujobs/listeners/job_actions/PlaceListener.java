@@ -28,7 +28,6 @@ public class PlaceListener implements Listener {
         Block block = e.getBlock();
         BlockData blockData = block.getBlockData();
 
-        // Build the value key for the job system (like BreakListener)
         String value;
         if (blockData instanceof Ageable ageable) {
             value = block.getType().name() + ageable.getAge();
@@ -36,7 +35,9 @@ public class PlaceListener implements Listener {
             value = block.getType().name();
         }
 
-        // Check if any jobs have PLACE actions
+        // Convert to lowercase to match config keys
+        value = value.toLowerCase();
+
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {
             for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.PLACE)) {
                 jobManager.processAction(player, BuiltInActions.Material.PLACE, value, job, 1);
