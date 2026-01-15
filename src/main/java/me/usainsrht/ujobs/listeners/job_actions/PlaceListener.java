@@ -35,9 +35,6 @@ public class PlaceListener implements Listener {
             value = block.getType().name();
         }
 
-        // Convert to lowercase to match config keys
-        value = value.toLowerCase();
-
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {
             for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.PLACE)) {
                 jobManager.processAction(player, BuiltInActions.Material.PLACE, value, job, 1);
