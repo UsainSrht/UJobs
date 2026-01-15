@@ -61,7 +61,9 @@ public class JobExpUtils {
         }
 
         // Show boss bar
-        showJobBossBar(player, job, newLevel, newExp, expGain, leveledUp);
+        if (plugin.getConfig().getBoolean("progress_bossbars", true)) {
+            showJobBossBar(player, job, newLevel, newExp, expGain, leveledUp);
+        }
 
         // Save data
         //plugin.getStorage().save(playerData.getUuid());

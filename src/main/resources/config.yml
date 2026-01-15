@@ -1,3 +1,9 @@
+# job bossbars when you gain xp in a job.
+progress_bossbars: true
+
+# remove empty (?) lines in gui items
+gui_remove_empty_lines: true
+
 expinfo:
   list_in_lore: 15
   gui:

@@ -60,7 +60,7 @@ public final class UJobsPlugin extends JavaPlugin {
 
         // Start leaderboard calculation timer
         //currently disabled
-        startLeaderboardTimer();
+        //startLeaderboardTimer();
 
         registerPlaceholders();
 
