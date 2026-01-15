@@ -1,5 +1,5 @@
 name: UJobs
-version: '1.0.3'
+version: '1.0.4'
 main: me.usainsrht.ujobs.UJobsPlugin
 api-version: '1.21'
 authors: [ UsainSrht ]
