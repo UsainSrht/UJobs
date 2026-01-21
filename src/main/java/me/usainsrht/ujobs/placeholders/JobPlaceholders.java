@@ -91,8 +91,8 @@ public class JobPlaceholders extends PlaceholderExpansion {
         } else if (param[0].equalsIgnoreCase("leaderboard")) {
             if (param.length < 4) return null;
             int position = Integer.parseInt(param[3]);
-            UUID target = plugin.getLeaderboardManager().getPlayerByPosition(position + 1, job);
-            if (target == null) return null;
+            UUID target = plugin.getLeaderboardManager().getPlayerByPosition(position - 1, job);
+            if (target == null) return "?";
             if (param[1].equalsIgnoreCase("name")) {
                 OfflinePlayer lbPlayer = plugin.getServer().getOfflinePlayer(target);
                 return lbPlayer.getName();

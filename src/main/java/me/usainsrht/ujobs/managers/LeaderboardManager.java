@@ -249,8 +249,10 @@ public class LeaderboardManager {
 
             if (opponent != null) {
                 OfflinePlayer opponentPlayer = Bukkit.getOfflinePlayer(opponent);
-                placeholderSet.add(Placeholder.component("opponent_displayname", opponentPlayer.isOnline() ? opponentPlayer.getPlayer().displayName() : Component.text(opponentPlayer.getName())));
-                placeholderSet.add(Placeholder.unparsed("opponent_name", opponentPlayer.getName()));
+                try {
+                    placeholderSet.add(Placeholder.component("opponent_displayname", opponentPlayer.isOnline() ? opponentPlayer.getPlayer().displayName() : Component.text(opponentPlayer.getName())));
+                    placeholderSet.add(Placeholder.unparsed("opponent_name", opponentPlayer.getName()));
+                } catch (Exception ignored) {}
 
                 TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[0]);
 
