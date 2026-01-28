@@ -78,7 +78,6 @@ public class JobExpUtils {
 
         for (String cmd : job.getLevelUpCommands()) {
             String parsedCmd = cmd
-                    .replace("<player>", player.getName())
                     .replace("<level>", String.valueOf(newLevel));
             List<String> all = new ArrayList<>();
             Matcher m = Pattern.compile("([0-9()+\\-*/.]+)").matcher(parsedCmd);
@@ -91,6 +90,7 @@ public class JobExpUtils {
                     // Ignore invalid math expressions
                 }
             }
+            parsedCmd = parsedCmd.replace("<player>", player.getName());
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), parsedCmd);
         }
 
