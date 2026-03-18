@@ -1,6 +1,40 @@
 # job bossbars when you gain xp in a job.
 progress_bossbars: true
 
+# data storage backend
+storage:
+  # supported values: pdc, sqlite, mysql, postgresql
+  type: pdc
+  # when true, database backends read from pdc if db row is missing and write back to pdc on save
+  pdc_fallback: true
+
+  sqlite:
+    file: "storage/ujobs.db"
+
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "ujobs"
+    username: "root"
+    password: ""
+    ssl: false
+
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "ujobs"
+    username: "postgres"
+    password: ""
+    ssl: false
+
+  pool:
+    maximum_pool_size: 10
+    minimum_idle: 2
+    connection_timeout_ms: 10000
+    max_lifetime_ms: 1800000
+    idle_timeout_ms: 600000
+    keepalive_time_ms: 0
+
 # remove empty (?) lines in gui items
 gui_remove_empty_lines: true
 

@@ -7,12 +7,11 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,44 +19,58 @@ public class JobExpUtils {
 
     public static void processJobExp(Player player, Job job, Job.ActionReward reward, int amount) {
         UJobsPlugin plugin = UJobsPlugin.instance;
+        if (plugin == null || player == null || job == null || reward == null || amount <= 0) {
+            return;
+        }
 
         PlayerJobData playerData = plugin.getStorage().getCached(player.getUniqueId());
+        if (playerData == null) {
+            return;
+        }
         PlayerJobData.JobStats stats = playerData.getJobStats(job.getId());
 
         // Calculate rewards
         double expGain = reward.getExp() * amount;
         double moneyGain = reward.getMoney() * amount;
 
-        // Current stats
-        int currentLevel = stats.getLevel();
-        double currentExp = stats.getExp();
-        double newExp = currentExp + expGain;
-
-        // Calculate required exp for next level
-        long requiredExp = job.calculateExpForLevel(currentLevel);
-
-        // Check for level up
         boolean leveledUp = false;
-        int newLevel = currentLevel;
+        int newLevel;
+        double newExp;
 
-        if (newExp >= requiredExp) {
-            leveledUp = true;
-            newLevel = currentLevel + 1;
-            newExp = newExp - requiredExp; // Carry over excess exp
+        synchronized (stats) {
+            // Current stats
+            int currentLevel = stats.getLevel();
+            double currentExp = stats.getExp();
+            newExp = currentExp + expGain;
 
-            stats.setLevel(newLevel);
-            stats.setExp(newExp);
+            // Calculate required exp for next level
+            long requiredExp = job.calculateExpForLevel(currentLevel);
 
+            // Check for level up
+            if (newExp >= requiredExp) {
+                leveledUp = true;
+                newLevel = currentLevel + 1;
+                newExp = newExp - requiredExp; // Carry over excess exp
+
+                stats.setLevel(newLevel);
+                stats.setExp(newExp);
+            } else {
+                newLevel = currentLevel;
+                stats.setExp(newExp);
+            }
+        }
+
+        if (leveledUp) {
             // Handle level up
             handleLevelUp(player, job, newLevel);
-        } else {
-            stats.setExp(newExp);
         }
 
         // Add money
         if (moneyGain > 0 && plugin.getEconomy() != null) {
             plugin.getEconomy().depositPlayer(player, moneyGain);
-            stats.setTotalMoney(stats.getTotalMoney() + moneyGain);
+            synchronized (stats) {
+                stats.setTotalMoney(stats.getTotalMoney() + moneyGain);
+            }
         }
 
         // Show boss bar
@@ -131,37 +144,33 @@ public class JobExpUtils {
         UJobsPlugin plugin = UJobsPlugin.instance;
         String levelUpTemplate = job.getBossBarConfig().getLevelUpTemplate();
 
-        new BukkitRunnable() {
-            private int ticks = 0;
+        AtomicInteger ticks = new AtomicInteger(0);
 
-            @Override
-            public void run() {
-                if (ticks >= 60) { // 3 seconds
-                    cancel();
-                    return;
-                }
-
-                // Create animated phase value
-                double phase = Math.random();
-                String animatedTemplate = levelUpTemplate.replace("{phase}", String.valueOf(phase % 1.0));
-
-                Component title = plugin.getMiniMessage().deserialize(animatedTemplate,
-                        Placeholder.component("job", job.getName()),
-                        Formatter.number("level", newLevel)
-                );
-
-                BossBar levelUpBar = BossBar.bossBar(
-                        title,
-                        1.0f,
-                        job.getBossBarConfig().getColor(),
-                        job.getBossBarConfig().getOverlay()
-                );
-
-                plugin.getBossBarManager().showBossBar(player, job.getId() + "_levelup", levelUpBar, 1);
-
-                ticks++;
+        plugin.getMorePaperLib().scheduling().entitySpecificScheduler(player).runAtFixedRate(task -> {
+            if (ticks.getAndIncrement() >= 60) { // 3 seconds
+                task.cancel();
+                return;
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+
+            // Create animated phase value
+            double phase = Math.random();
+            String animatedTemplate = levelUpTemplate.replace("{phase}", String.valueOf(phase % 1.0));
+
+            Component title = plugin.getMiniMessage().deserialize(animatedTemplate,
+                    Placeholder.component("job", job.getName()),
+                    Formatter.number("level", newLevel)
+            );
+
+            BossBar levelUpBar = BossBar.bossBar(
+                    title,
+                    1.0f,
+                    job.getBossBarConfig().getColor(),
+                    job.getBossBarConfig().getOverlay()
+            );
+
+            plugin.getBossBarManager().showBossBar(player, job.getId() + "_levelup", levelUpBar, 1);
+
+        }, () -> {}, 1L, 1L);
     }
 
     public int calculatePlayerLevel(String jobId, double experience) {

@@ -121,6 +121,10 @@ public class LeaderboardGUI implements JobGUI {
     }
 
     private ItemStack createJobLeaderboardItem(Job job, int min) {
+        if (job == null) {
+            return new ItemStack(Material.BARRIER);
+        }
+
         String jobId = job.getId();
         int listAmount = plugin.getConfig().getInt("leaderboard.list_in_lore", 10);
         int maxTop = plugin.getConfig().getInt("leaderboard.calculate_top", 100);
@@ -151,7 +155,7 @@ public class LeaderboardGUI implements JobGUI {
         placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
 
         // Top list placeholders
-        UUID[] topPlayers = plugin.getLeaderboardManager().getLeaderboardJobCache().get(job);
+        UUID[] topPlayers = plugin.getLeaderboardManager().getTopPlayersSnapshot(job);
         for (int s = 1; s <= listAmount; s++) {
             int r = (s + min) - 2;
 
@@ -163,7 +167,7 @@ public class LeaderboardGUI implements JobGUI {
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUuid);
                 playerName = offlinePlayer.getName() != null ? offlinePlayer.getName() : "?";
 
-                PlayerLeaderboardData leaderboardData = plugin.getLeaderboardManager().getLeaderboardPlayerCache().get(playerUuid);
+                PlayerLeaderboardData leaderboardData = plugin.getLeaderboardManager().getPlayerData(playerUuid);
                 if (leaderboardData != null && leaderboardData.getLeaderboardStats().containsKey(job)) {
                     level = String.valueOf(leaderboardData.getLeaderboardStats().get(job).getLevel());
                 }
@@ -179,7 +183,7 @@ public class LeaderboardGUI implements JobGUI {
         placeholderSet.add(Placeholder.parsed("max", String.valueOf((min + listAmount) - 1)));
 
         // Viewer's position and stats
-        PlayerLeaderboardData viewerLeaderboardData = plugin.getLeaderboardManager().getLeaderboardPlayerCache().get(viewerUuid);
+        PlayerLeaderboardData viewerLeaderboardData = plugin.getLeaderboardManager().getPlayerData(viewerUuid);
         String viewerPosition = "+" + maxTop;
         String viewerLevel = "0";
         String viewerExp = "0";
@@ -191,7 +195,7 @@ public class LeaderboardGUI implements JobGUI {
         }
 
         // Get viewer's current exp from PlayerJobData if needed
-        if (plugin.getStorage().isCached(viewerUuid)) {
+        if (viewerUuid != null && plugin.getStorage().isCached(viewerUuid)) {
             PlayerJobData playerJobData = plugin.getStorage().getCached(viewerUuid);
             if (playerJobData != null) {
                 viewerExp = String.valueOf(playerJobData.getJobStats(jobId).getExp());
@@ -294,6 +298,9 @@ public class LeaderboardGUI implements JobGUI {
         // Find which job this item represents
         String jobStr = meta.getPersistentDataContainer().get(jobKey, PersistentDataType.STRING);
         Job job = plugin.getJobManager().getJobs().get(jobStr);
+        if (job == null) {
+            return;
+        }
         ItemStack newItem = createJobLeaderboardItem(job, newMin);
         inventory.setItem(e.getSlot(), newItem);
     }

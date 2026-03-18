@@ -1,9 +1,11 @@
 name: UJobs
-version: '1.0.5'
+version: '1.0.6'
 main: me.usainsrht.ujobs.UJobsPlugin
+loader: me.usainsrht.ujobs.UJobsPluginLoader
 api-version: '1.21'
 authors: [ UsainSrht ]
 description: 'The job plugin.'
+folia-supported: true
 dependencies:
   server:
     Vault:

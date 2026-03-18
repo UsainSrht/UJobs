@@ -30,12 +30,16 @@ import java.util.*;
 @Getter
 public class MainJobGUI implements JobGUI {
 
+    private final UJobsPlugin plugin;
     public Inventory inventory;
     public UUID uuid;
 
     public static final NamespacedKey jobKey = new NamespacedKey("ujobs", "job_id");
 
     public MainJobGUI(UJobsPlugin plugin, UUID uuid) {
+        this.plugin = plugin;
+        this.uuid = uuid;
+
         int rows = (int)Math.ceil(plugin.getJobManager().getJobs().size() / 7f) + 2;
         Component title = plugin.getMiniMessage().deserialize(plugin.getConfig().getString("gui.title"));
         this.inventory = Bukkit.createInventory(this, rows*9, title);
@@ -49,12 +53,28 @@ public class MainJobGUI implements JobGUI {
             }
         }
 
+        if (uuid == null) {
+            plugin.getLogger().warning("MainJobGUI was opened with a null UUID.");
+            return;
+        }
+
         PlayerJobData playerJobData;
         if (plugin.getStorage().isCached(uuid)) {
             playerJobData = plugin.getStorage().getCached(uuid);
-            fill(plugin, playerJobData);
+            if (playerJobData != null) {
+                fill(plugin, playerJobData);
+            }
         } else {
-            plugin.getStorage().load(uuid).thenAccept(data -> fill(plugin, data));
+            plugin.getStorage().load(uuid).thenAccept(data -> {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player != null && player.isOnline()) {
+                    plugin.getMorePaperLib().scheduling().entitySpecificScheduler(player).run(
+                            () -> fill(plugin, data),
+                            () -> {
+                            }
+                    );
+                }
+            });
         }
 
     }
@@ -134,13 +154,18 @@ public class MainJobGUI implements JobGUI {
     public void onClick(InventoryClickEvent e) {
         e.setCancelled(true);
 
+        if (!(e.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+
         ItemStack itemStack = e.getCurrentItem();
         if (itemStack == null || itemStack.getType() == Material.AIR) return;
-        if (itemStack.getPersistentDataContainer().has(jobKey)) {
+        if (itemStack.getItemMeta() != null && itemStack.getItemMeta().getPersistentDataContainer().has(jobKey)) {
+            UUID viewerUuid = uuid != null ? uuid : player.getUniqueId();
             if (e.getClick().isLeftClick()) {
-                new LeaderboardGUI(UJobsPlugin.instance, uuid).open((Player) e.getWhoClicked());
+                new LeaderboardGUI(plugin, viewerUuid).open(player);
             } else if (e.getClick().isRightClick()) {
-                new JobInfoGUI(UJobsPlugin.instance).open((Player) e.getWhoClicked());
+                new JobInfoGUI(plugin).open(player);
             }
         }
     }

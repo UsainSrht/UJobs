@@ -36,7 +36,9 @@ public class TradeListener implements Listener {
             }
             for (Job job : jobManager.getJobsWithAction(BuiltInActions.Material.TRADE)) {
                 jobManager.processAction(player, BuiltInActions.Material.TRADE, result, job, 1);
-                jobManager.processAction(player, BuiltInActions.Material.TRADE, adjusted1Name, job, 1);
+                if (adjusted1Name != null) {
+                    jobManager.processAction(player, BuiltInActions.Material.TRADE, adjusted1Name, job, 1);
+                }
             }
         }
 

@@ -24,6 +24,8 @@ public class HarvestListener implements Listener {
 
         if (jobManager.shouldIgnore(player)) return;
 
+        if (e.getItemsHarvested() == null || e.getItemsHarvested().isEmpty()) return;
+
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.HARVEST)) {
             for (ItemStack itemStack : e.getItemsHarvested()) {
                 String value = itemStack.getType().name();

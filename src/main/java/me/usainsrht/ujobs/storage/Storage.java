@@ -3,6 +3,7 @@ package me.usainsrht.ujobs.storage;
 import me.usainsrht.ujobs.models.PlayerJobData;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,5 +24,11 @@ public interface Storage {
     void remove(UUID uuid);
 
     void removeFromCache(UUID uuid);
+
+    Collection<PlayerJobData> getAllCachedData();
+
+    default void close() {
+        // optional lifecycle hook for storages that hold external resources
+    }
 
 }

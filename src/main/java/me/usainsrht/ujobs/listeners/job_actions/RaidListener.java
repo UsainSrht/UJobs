@@ -27,12 +27,20 @@ public class RaidListener implements Listener {
         Raid raid = e.getRaid();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.RAID)) {
-            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.RAID)) {
-                for (UUID uuid : raid.getHeroes()) {
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player == null || !player.isOnline() || jobManager.shouldIgnore(player)) continue;
-                    jobManager.processAction(player, BuiltInActions.Special.RAID, "win", job, 1);
-                }
+            for (UUID uuid : raid.getHeroes()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null || !player.isOnline()) continue;
+
+                jobManager.getPlugin().getMorePaperLib().scheduling().entitySpecificScheduler(player).run(
+                        () -> {
+                            if (jobManager.shouldIgnore(player)) return;
+                            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.RAID)) {
+                                jobManager.processAction(player, BuiltInActions.Special.RAID, "win", job, 1);
+                            }
+                        },
+                        () -> {
+                        }
+                );
             }
         }
 
@@ -43,12 +51,20 @@ public class RaidListener implements Listener {
         Raid raid = e.getRaid();
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.RAID)) {
-            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.RAID)) {
-                for (UUID uuid : raid.getHeroes()) {
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player == null || !player.isOnline() || jobManager.shouldIgnore(player)) continue;
-                    jobManager.processAction(player, BuiltInActions.Special.RAID, "wave", job, 1);
-                }
+            for (UUID uuid : raid.getHeroes()) {
+                Player player = Bukkit.getPlayer(uuid);
+                if (player == null || !player.isOnline()) continue;
+
+                jobManager.getPlugin().getMorePaperLib().scheduling().entitySpecificScheduler(player).run(
+                        () -> {
+                            if (jobManager.shouldIgnore(player)) return;
+                            for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.RAID)) {
+                                jobManager.processAction(player, BuiltInActions.Special.RAID, "wave", job, 1);
+                            }
+                        },
+                        () -> {
+                        }
+                );
             }
         }
 

@@ -3,9 +3,9 @@ package me.usainsrht.ujobs.models;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class PlayerJobData {
@@ -14,7 +14,7 @@ public class PlayerJobData {
 
     public PlayerJobData(UUID playerId) {
         this.uuid = playerId;
-        this.jobStats = new HashMap<>();
+        this.jobStats = new ConcurrentHashMap<>();
     }
 
     public JobStats getJobStats(String jobId) {
@@ -47,9 +47,9 @@ public class PlayerJobData {
     @Getter
     @Setter
     public static class JobStats {
-        private int level;
-        private double exp;
-        private double totalMoney;
+        private volatile int level;
+        private volatile double exp;
+        private volatile double totalMoney;
 
         public JobStats() {
             this(0, 0, 0.0);

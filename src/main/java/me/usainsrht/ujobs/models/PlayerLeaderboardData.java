@@ -3,19 +3,19 @@ package me.usainsrht.ujobs.models;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class PlayerLeaderboardData {
 
-    UUID uuid;
-    Map<Job, LeaderboardStats> leaderboardStats;
+    private final UUID uuid;
+    private final Map<Job, LeaderboardStats> leaderboardStats;
 
     public PlayerLeaderboardData(UUID uuid) {
         this.uuid = uuid;
-        this.leaderboardStats = new HashMap<>();
+        this.leaderboardStats = new ConcurrentHashMap<>();
     }
 
     @Getter

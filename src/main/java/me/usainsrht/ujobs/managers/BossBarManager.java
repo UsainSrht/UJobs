@@ -3,10 +3,8 @@ package me.usainsrht.ujobs.managers;
 import me.usainsrht.ujobs.UJobsPlugin;
 import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
+import space.arim.morepaperlib.scheduling.ScheduledTask;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,7 +22,7 @@ public class BossBarManager {
         UUID playerId = player.getUniqueId();
 
         // Get or create player's boss bar map
-        Map<String, BossBarData> bossBars = playerBossBars.computeIfAbsent(playerId, k -> new HashMap<>());
+        Map<String, BossBarData> bossBars = playerBossBars.computeIfAbsent(playerId, k -> new ConcurrentHashMap<>());
 
         // Remove existing boss bar with same key
         BossBarData existing = bossBars.get(key);
@@ -43,17 +41,21 @@ public class BossBarManager {
         }
         BossBar finalBossBar = bossBar;
 
-        // Create hide task
-        BukkitTask hideTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                hideBossBar(player, finalBossBar);
-                bossBars.remove(key);
-                if (bossBars.isEmpty()) {
-                    playerBossBars.remove(playerId);
-                }
+        Runnable cleanup = () -> {
+            bossBars.remove(key);
+            if (bossBars.isEmpty()) {
+                playerBossBars.remove(playerId);
             }
-        }.runTaskLater(plugin, durationSeconds * 20L);
+        };
+
+        ScheduledTask hideTask = plugin.getMorePaperLib().scheduling().entitySpecificScheduler(player).runDelayed(
+                () -> {
+                hideBossBar(player, finalBossBar);
+                    cleanup.run();
+                },
+                cleanup,
+                durationSeconds * 20L
+        );
 
         // Store boss bar data
         bossBars.put(key, new BossBarData(bossBar, hideTask));
@@ -133,9 +135,9 @@ public class BossBarManager {
 
     private static class BossBarData {
         final BossBar bossBar;
-        final BukkitTask task;
+        final ScheduledTask task;
 
-        BossBarData(BossBar bossBar, BukkitTask task) {
+        BossBarData(BossBar bossBar, ScheduledTask task) {
             this.bossBar = bossBar;
             this.task = task;
         }

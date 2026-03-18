@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.LootGenerateEvent;
+import org.bukkit.loot.LootTable;
 
 public class LootGenerateListener implements Listener {
 
@@ -24,7 +25,11 @@ public class LootGenerateListener implements Listener {
         if (jobManager.shouldIgnore(player)) return;
 
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.GENERATE_LOOT)) {
-            String lootTable = e.getLootTable().key().value().replace("chests/", "");
+            LootTable lootTableObj = e.getLootTable();
+            if (lootTableObj == null || lootTableObj.key() == null) {
+                return;
+            }
+            String lootTable = lootTableObj.key().value().replace("chests/", "");
             for (Job job : jobManager.getJobsWithAction(BuiltInActions.Special.GENERATE_LOOT)) {
                 jobManager.processAction(player, BuiltInActions.Special.GENERATE_LOOT, lootTable, job, 1);
             }

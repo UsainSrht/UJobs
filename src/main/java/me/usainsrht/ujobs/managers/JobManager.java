@@ -164,6 +164,10 @@ public class JobManager {
     }
 
     public void processAction(Player player, Action action, String value, Job job, int amount) {
+        if (player == null || action == null || job == null || value == null || value.isBlank() || amount <= 0) {
+            return;
+        }
+
         PlayerJobData playerJobData = plugin.getStorage().getCached(player.getUniqueId());
         if (playerJobData == null) return; //job data has to be loaded at this point
 

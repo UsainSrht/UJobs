@@ -14,26 +14,31 @@ import me.usainsrht.ujobs.listeners.job_actions.timber.TreeFallListener;
 import me.usainsrht.ujobs.managers.*;
 import me.usainsrht.ujobs.models.BuiltInActions;
 import me.usainsrht.ujobs.placeholders.JobPlaceholders;
+import me.usainsrht.ujobs.storage.DatabaseStorage;
 import me.usainsrht.ujobs.storage.PDCStorage;
 import me.usainsrht.ujobs.storage.Storage;
 import me.usainsrht.ujobs.yaml.YamlCommand;
 import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.economy.Economy;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import space.arim.morepaperlib.MorePaperLib;
 
+import java.time.Duration;
+import java.util.Locale;
 import java.util.logging.Level;
 
 @Getter
 public final class UJobsPlugin extends JavaPlugin {
 
-    public static UJobsPlugin instance;
+    public static volatile UJobsPlugin instance;
     private MiniMessage miniMessage;
     private Economy economy;
     private Storage storage;
+    private MorePaperLib morePaperLib;
 
     // Managers
     private ConfigManager configManager;
@@ -49,10 +54,13 @@ public final class UJobsPlugin extends JavaPlugin {
 
         // Initialize Adventure API
         this.miniMessage = MiniMessage.miniMessage();
+        this.morePaperLib = new MorePaperLib(this);
+
+        saveDefaultConfig();
 
         setupEconomy();
 
-        this.storage = new PDCStorage(this);
+        initializeStorage();
 
         initializeManagers();
 
@@ -64,6 +72,9 @@ public final class UJobsPlugin extends JavaPlugin {
 
         registerPlaceholders();
 
+        int pluginId = 30282;
+        Metrics metrics = new Metrics(this, pluginId);
+
         getLogger().info("UJobs has been enabled successfully!");
     }
 
@@ -72,7 +83,11 @@ public final class UJobsPlugin extends JavaPlugin {
 
         // Save all data
         if (storage != null) {
+            if (storage instanceof PDCStorage pdcStorage) {
+                pdcStorage.saveNowAll();
+            }
             storage.save();
+            storage.close();
         }
 
         if (leaderboardManager != null) leaderboardManager.save(); //saves to cache
@@ -157,6 +172,9 @@ public final class UJobsPlugin extends JavaPlugin {
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.HARVEST)) {
             getServer().getPluginManager().registerEvents(new HarvestListener(jobManager), this);
         }
+        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.SMELT)) {
+            getServer().getPluginManager().registerEvents(new SmeltListener(jobManager), this);
+        }
 
         LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
         manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
@@ -182,6 +200,50 @@ public final class UJobsPlugin extends JavaPlugin {
         }
     }
 
+    private void initializeStorage() {
+        String storageType = getConfig().getString("storage.type", "pdc").toLowerCase(Locale.ROOT);
+
+        try {
+            switch (storageType) {
+                case "sqlite", "mysql", "postgresql" -> {
+                    if (!hasDatabaseLibraries()) {
+                        getLogger().severe("Database libraries are missing from classpath. Falling back to pdc storage.");
+                        getLogger().severe("Expected classes: com.zaxxer.hikari.HikariConfig and selected JDBC driver.");
+                        this.storage = new PDCStorage(this);
+                        return;
+                    }
+                    this.storage = new DatabaseStorage(this, storageType);
+                    getLogger().info("Using " + storageType + " storage backend.");
+                }
+                case "pdc" -> {
+                    this.storage = new PDCStorage(this);
+                    getLogger().info("Using pdc storage backend.");
+                }
+                default -> {
+                    getLogger().warning("Unknown storage type '" + storageType + "'. Falling back to pdc.");
+                    this.storage = new PDCStorage(this);
+                }
+            }
+        } catch (Throwable e) {
+            getLogger().log(Level.SEVERE, "Failed to initialize storage backend '" + storageType + "', falling back to pdc", e);
+            this.storage = new PDCStorage(this);
+        }
+    }
+
+    private boolean hasDatabaseLibraries() {
+        return hasClass("com.zaxxer.hikari.HikariConfig")
+                && (hasClass("org.sqlite.JDBC") || hasClass("com.mysql.cj.jdbc.Driver") || hasClass("org.postgresql.Driver"));
+    }
+
+    private boolean hasClass(String className) {
+        try {
+            Class.forName(className, false, getClassLoader());
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
+        }
+    }
+
     private void registerPlaceholders() {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new JobPlaceholders(this).register();
@@ -189,12 +251,13 @@ public final class UJobsPlugin extends JavaPlugin {
     }
 
     private void startLeaderboardTimer() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                //leaderboardManager.calculateLeaderboard();
-            }
-        }.runTaskTimerAsynchronously(this, 20L * 60 * 2, 20L * 60 * 60); // Every hour after 2 minute delay
+        morePaperLib.scheduling().asyncScheduler().runAtFixedRate(
+                () -> {
+                    //leaderboardManager.calculateLeaderboard();
+                },
+                Duration.ofMinutes(2),
+                Duration.ofHours(1)
+        );
     }
 
 

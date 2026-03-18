@@ -18,7 +18,10 @@ import me.usainsrht.ujobs.utils.JobExpUtils;
 import me.usainsrht.ujobs.utils.MessageUtil;
 import me.usainsrht.ujobs.yaml.YamlCommand;
 import net.kyori.adventure.text.Component;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Locale;
 
 public class MainCommand {
 
@@ -46,6 +49,37 @@ public class MainCommand {
                             return Command.SINGLE_SUCCESS;
                         })
                 )
+                        .then(Commands.literal("info")
+                            .requires(context -> context.getSender().hasPermission("ujobs.admin.info"))
+                            .executes(context -> {
+                                CommandSender sender = context.getSource().getSender();
+
+                                String configuredStorage = plugin.getConfig().getString("storage.type", "pdc");
+                                String activeStorage = plugin.getStorage().getClass().getSimpleName();
+                                int cachedPlayers = plugin.getStorage().getAllCachedData().size();
+                                int jobCount = plugin.getJobManager().getJobs().size();
+
+                                boolean vaultEnabled = plugin.getEconomy() != null;
+                                boolean placeholderApiEnabled = plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI");
+                                boolean foliaDetected = plugin.getServer().getName().toLowerCase(Locale.ROOT).contains("folia")
+                                    || plugin.getServer().getVersion().toLowerCase(Locale.ROOT).contains("folia");
+
+                                sender.sendMessage("§8§m------------------------------");
+                                sender.sendMessage("§6UJobs Info");
+                                sender.sendMessage("§7Version: §f" + plugin.getPluginMeta().getVersion());
+                                sender.sendMessage("§7Configured storage: §f" + configuredStorage);
+                                sender.sendMessage("§7Active storage class: §f" + activeStorage);
+                                sender.sendMessage("§7Cached player data: §f" + cachedPlayers);
+                                sender.sendMessage("§7Loaded jobs: §f" + jobCount);
+                                sender.sendMessage("§7Vault hooked: §f" + (vaultEnabled ? "yes" : "no"));
+                                sender.sendMessage("§7PlaceholderAPI hooked: §f" + (placeholderApiEnabled ? "yes" : "no"));
+                                sender.sendMessage("§7Folia detected: §f" + (foliaDetected ? "yes" : "no"));
+                                sender.sendMessage("§7Server: §f" + plugin.getServer().getName());
+                                sender.sendMessage("§8§m------------------------------");
+
+                                return Command.SINGLE_SUCCESS;
+                            })
+                        )
                 .then(Commands.literal("addexp")
                         .requires(context -> context.getSender().hasPermission("ujobs.admin.addexp"))
                         .executes(context -> {
@@ -117,6 +151,10 @@ public class MainCommand {
 
                                                     if (plugin.getJobManager().getJobs().containsKey(jobId)) {
                                                         PlayerJobData playerJobData = plugin.getStorage().getCached(target.getUniqueId());
+                                                        if (playerJobData == null) {
+                                                            context.getSource().getSender().sendMessage("Player data is not loaded yet for: " + target.getName());
+                                                            return -1;
+                                                        }
                                                         PlayerJobData.JobStats jobStats = playerJobData.getJobStats(jobId);
                                                         jobStats.setLevel(level);
                                                         jobStats.setExp(0);
