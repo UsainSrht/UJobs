@@ -69,7 +69,7 @@ public class JobManager {
 
         // Load basic job info
         String nameText = jobSection.getString("name", jobId);
-        Component name = plugin.getMiniMessage().deserialize(nameText);
+        Component name = plugin.getMiniMessage().deserialize(nameText).compact();
 
         String iconString = jobSection.getString("icon", "STONE");
         Material icon;

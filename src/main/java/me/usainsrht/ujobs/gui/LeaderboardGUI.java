@@ -151,8 +151,8 @@ public class LeaderboardGUI implements JobGUI {
         placeholderSet.add(Placeholder.component("job", job.getName()));
 
         // Color placeholders
-        placeholderSet.add(Placeholder.styling("primary", job.getName().children().getFirst().color()));
-        placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
+        placeholderSet.add(Placeholder.styling("primary", job.getFirstColor()));
+        placeholderSet.add(Placeholder.styling("secondary", job.getLastColor()));
 
         // Top list placeholders
         UUID[] topPlayers = plugin.getLeaderboardManager().getTopPlayersSnapshot(job);

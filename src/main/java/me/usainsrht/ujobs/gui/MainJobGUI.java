@@ -95,8 +95,8 @@ public class MainJobGUI implements JobGUI {
             double nextExp = job.calculateExpForLevel(level);
             double totalMoney = jobStats.getTotalMoney();
             String progress = ProgressBarUtil.getProgressBar(exp, nextExp, 25, "", "|", "<color:dark_gray>", "|");
-            TextColor primaryColor = job.getName().children().getFirst().color();
-            TextColor secondaryColor = job.getName().children().getLast().color();
+            TextColor primaryColor = job.getFirstColor();
+            TextColor secondaryColor = job.getLastColor();
 
             Set<TagResolver> placeholderSet = new HashSet<>();
             placeholderSet.add(Placeholder.component("job", job.getName()));
@@ -106,8 +106,8 @@ public class MainJobGUI implements JobGUI {
             placeholderSet.add(Formatter.number("next_exp", nextExp));
             placeholderSet.add(Formatter.number("total_money", totalMoney));
             placeholderSet.add(Placeholder.parsed("progress", progress));
-            placeholderSet.add(Placeholder.parsed("money_symbol", plugin.getConfig().getString("symbols.money")));
-            placeholderSet.add(Placeholder.parsed("exp_symbol", plugin.getConfig().getString("symbols.exp")));
+            placeholderSet.add(Placeholder.parsed("money_symbol", plugin.getConfig().getString("symbols.money", "$")));
+            placeholderSet.add(Placeholder.parsed("exp_symbol", plugin.getConfig().getString("symbols.exp", "xp")));
             placeholderSet.add(Placeholder.styling("primary", primaryColor));
             placeholderSet.add(Placeholder.styling("secondary", secondaryColor));
             int position = plugin.getLeaderboardManager().getPosition(playerJobData.getUuid(), job);

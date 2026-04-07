@@ -22,6 +22,10 @@ public class JobInfoLine {
         this.value = value;
         this.reward = reward;
         String line = UJobsPlugin.instance.getConfig().getString("actions." + action.getName().toLowerCase(Locale.ROOT));
+        if (line == null) {
+            UJobsPlugin.instance.getLogger().severe("Please add " + action.getName().toLowerCase(Locale.ROOT) + " to the config.yml under 'actions:'");
+            line = "<gray>" + action.getName() + "</gray> <value>"; //default value to prevent npe
+        }
         Component parsed;
         if (action instanceof EntityAction) {
             EntityType entityType = EntityType.valueOf(value.toUpperCase(Locale.ROOT));

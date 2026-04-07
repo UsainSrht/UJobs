@@ -5,6 +5,9 @@ import me.usainsrht.ujobs.utils.MathUtil;
 import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentIteratorType;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
@@ -16,6 +19,8 @@ import java.util.Map;
 public class Job {
     private final String id;
     private Component name;
+    private TextColor firstColor;
+    private TextColor lastColor;
     private Material icon;
     private String levelEquation;
     private YamlMessage levelUpMessage;
@@ -50,6 +55,38 @@ public class Job {
         this.actions.putAll(otherJobInstance.actions);
         this.infoLines.clear();
         this.infoLines.addAll(otherJobInstance.infoLines);
+    }
+
+    public void setColors() {
+        TextColor firstColor = null;
+        TextColor lastColor = null;
+
+        // Iterate through all parts of the component tree
+        for (Component part : name.iterable(ComponentIteratorType.DEPTH_FIRST)) {
+            if (part instanceof TextComponent text && !text.content().isEmpty()) {
+                TextColor currentColor = text.color();
+
+                // The first non-empty text component we hit
+                if (firstColor == null) {
+                    firstColor = currentColor;
+                }
+
+                // Keep updating lastColor; the last one found will be the final one
+                lastColor = currentColor;
+            }
+        }
+        this.firstColor = firstColor;
+        this.lastColor = lastColor;
+    }
+
+    public TextColor getFirstColor() {
+        if (firstColor == null) setColors();
+        return firstColor != null ? firstColor : TextColor.color(0xFFFFFF);
+    }
+
+    public TextColor getLastColor() {
+        if (lastColor == null) setColors();
+        return lastColor != null ? lastColor : TextColor.color(0xFFFFFF);
     }
 
     public void addAction(Action action, String value, ActionReward reward) {

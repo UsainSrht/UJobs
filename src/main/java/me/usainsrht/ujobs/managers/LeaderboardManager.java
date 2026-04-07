@@ -297,7 +297,7 @@ public class LeaderboardManager {
 
                 TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[0]);
 
-                if (newPos == 0) {
+                if (newPos == 0 && opponent != null) {
                     MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_take_lead"), placeholders);
                 } else if (newPos == 9) {
                     MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_get_in_top_10"), placeholders);

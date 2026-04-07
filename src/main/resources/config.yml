@@ -157,6 +157,7 @@ actions:
   kill: "<gray>Kill</gray> <value>"
   breed: "<gray>Breed</gray> <value>"
   break: "<gray>Break</gray> <value>"
+  place: "<gray>Place</gray> <value>"
   tame: "<gray>Tame</gray> <value>"
   fish: "<gray>Catch</gray> <value>"
   enchant: "<gray>Apply <value> enchant</gray>"

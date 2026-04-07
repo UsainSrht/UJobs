@@ -139,12 +139,12 @@ public class JobInfoGUI implements JobGUI {
         placeholderSet.add(Placeholder.component("job", job.getName()));
 
         // Color placeholders
-        placeholderSet.add(Placeholder.styling("primary", job.getName().children().getFirst().color()));
-        placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
+        placeholderSet.add(Placeholder.styling("primary", job.getFirstColor()));
+        placeholderSet.add(Placeholder.styling("secondary", job.getLastColor()));
 
         // Symbol placeholders
-        placeholderSet.add(Placeholder.parsed("symbol_money", plugin.getConfig().getString("symbols.money")));
-        placeholderSet.add(Placeholder.parsed("symbol_exp", plugin.getConfig().getString("symbols.exp")));
+        placeholderSet.add(Placeholder.parsed("symbol_money", plugin.getConfig().getString("symbols.money", "$")));
+        placeholderSet.add(Placeholder.parsed("symbol_exp", plugin.getConfig().getString("symbols.exp", "xp")));
 
         // exp info placeholders
         for (int s = 1; s <= listAmount; s++) {
