@@ -104,7 +104,9 @@ public class JobExpUtils {
                 }
             }
             parsedCmd = parsedCmd.replace("<player>", player.getName());
-            plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), parsedCmd);
+            String finalParsedCmd = parsedCmd;
+            plugin.getMorePaperLib().scheduling().globalRegionalScheduler().run(() ->
+                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), finalParsedCmd));
         }
 
         // Show level up boss bar animation
