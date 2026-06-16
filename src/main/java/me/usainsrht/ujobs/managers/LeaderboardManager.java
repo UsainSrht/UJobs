@@ -15,8 +15,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 public class LeaderboardManager {
@@ -25,6 +29,7 @@ public class LeaderboardManager {
     private final Map<UUID, PlayerLeaderboardData> leaderboardPlayerCache;
     private final Map<Job, UUID[]> leaderboardJobCache;
     private final Object leaderboardLock = new Object();
+    private final ExecutorService fileWriteExecutor = Executors.newSingleThreadExecutor();
 
     public LeaderboardManager(UJobsPlugin plugin) {
         this.plugin = plugin;
@@ -90,6 +95,7 @@ public class LeaderboardManager {
     }
 
     public void save() {
+        String yamlString;
         synchronized (leaderboardLock) {
             YamlConfiguration leaderboardConfig = plugin.getConfigManager().getLeaderboardConfig();
 
@@ -109,7 +115,32 @@ public class LeaderboardManager {
                 });
             }));
 
-            plugin.getConfigManager().saveLeaderboard();
+            yamlString = leaderboardConfig.saveToString();
+        }
+
+        fileWriteExecutor.submit(() -> {
+            try {
+                File file = new File(plugin.getDataFolder(), "leaderboard.yml");
+                File parent = file.getParentFile();
+                if (parent != null && !parent.exists()) {
+                    parent.mkdirs();
+                }
+                java.nio.file.Files.writeString(file.toPath(), yamlString);
+            } catch (Exception e) {
+                plugin.getLogger().log(java.util.logging.Level.SEVERE, "Failed to save leaderboard.yml asynchronously", e);
+            }
+        });
+    }
+
+    public void shutdown() {
+        fileWriteExecutor.shutdown();
+        try {
+            if (!fileWriteExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                fileWriteExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            fileWriteExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 

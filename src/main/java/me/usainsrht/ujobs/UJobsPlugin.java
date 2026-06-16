@@ -90,7 +90,10 @@ public final class UJobsPlugin extends JavaPlugin {
             storage.close();
         }
 
-        if (leaderboardManager != null) leaderboardManager.save(); //saves to cache
+        if (leaderboardManager != null) {
+            leaderboardManager.save(); //saves to cache (async task submitted)
+            leaderboardManager.shutdown(); //waits for async tasks to finish and shuts down
+        }
         if (configManager != null) configManager.saveLeaderboard(); //writes it
 
         // Cancel all boss bars
