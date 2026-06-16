@@ -60,10 +60,29 @@ public class JobPlaceholders extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
+        if (params.equalsIgnoreCase("weekly_job_name") || params.equalsIgnoreCase("weekly_job_displayname") || params.equalsIgnoreCase("weekly_job_legacydisplayname")
+                || params.equalsIgnoreCase("weeklyjob_name") || params.equalsIgnoreCase("weeklyjob_displayname") || params.equalsIgnoreCase("weeklyjob_legacydisplayname")) {
+            Job weeklyJob = plugin.getJobManager().getWeeklyJob();
+            if (weeklyJob == null) return "";
+            if (params.endsWith("name")) {
+                return PlainTextComponentSerializer.plainText().serialize(weeklyJob.getName());
+            } else if (params.endsWith("displayname")) {
+                if (params.endsWith("legacydisplayname")) {
+                    return LegacyComponentSerializer.legacySection().serialize(weeklyJob.getName());
+                }
+                return plugin.getMiniMessage().serialize(weeklyJob.getName());
+            }
+        }
+
         String[] param = params.split("_");
         if (param.length < 3) return null;
         String jobId = param[2];
-        Job job = plugin.getJobManager().getJobs().get(jobId);
+        Job job;
+        if (jobId.equalsIgnoreCase("weekly")) {
+            job = plugin.getJobManager().getWeeklyJob();
+        } else {
+            job = plugin.getJobManager().getJobs().get(jobId);
+        }
         if (job == null) return null;
         if (param[0].equalsIgnoreCase("job")) {
             if (param[1].equalsIgnoreCase("name")) {
@@ -77,7 +96,7 @@ public class JobPlaceholders extends PlaceholderExpansion {
             if (player == null || !player.isOnline()) return null;
             PlayerJobData playerJobData = plugin.getStorage().getCached(player.getUniqueId());
             if (playerJobData == null) return null;
-            PlayerJobData.JobStats jobStats = playerJobData.getJobStats(jobId);
+            PlayerJobData.JobStats jobStats = playerJobData.getJobStats(job.getId());
             if (param[1].equalsIgnoreCase("level")) {
                 return jobStats != null ? String.valueOf(jobStats.getLevel()) : "0";
             } else if (param[1].equalsIgnoreCase("exp")) {

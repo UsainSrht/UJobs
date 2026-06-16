@@ -183,4 +183,18 @@ public class JobManager {
         List<String> ignoredGamemodes = plugin.getConfig().getStringList("ignored_gamemodes");
         return ignoredGamemodes.contains(player.getGameMode().toString());
     }
+
+    public Job getWeeklyJob() {
+        if (jobs.isEmpty()) {
+            return null;
+        }
+        List<Job> jobList = new ArrayList<>(jobs.values());
+        Calendar calendar = Calendar.getInstance();
+        int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+        int index = (weekOfYear - 1) % jobList.size();
+        if (index < 0) {
+            index += jobList.size();
+        }
+        return jobList.get(index);
+    }
 }
