@@ -277,27 +277,38 @@ public class LeaderboardManager {
                     placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
                 } catch (Exception ignored) {}
 
+                boolean parsedOpponentDisplayName = false;
                 UUID opponent = null;
                 if (newPos + 1 < leaderboard.length) {
                     opponent = leaderboard[newPos + 1];
                 }
 
+                OfflinePlayer opponentPlayer = null;
                 if (opponent != null) {
-                    OfflinePlayer opponentPlayer = Bukkit.getOfflinePlayer(opponent);
-                    try {
-                        placeholderSet.add(Placeholder.component("opponent_displayname", opponentPlayer.isOnline() ? opponentPlayer.getPlayer().displayName() : Component.text(opponentPlayer.getName())));
-                        placeholderSet.add(Placeholder.unparsed("opponent_name", opponentPlayer.getName()));
-                    } catch (Exception ignored) {}
-
-                    TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[0]);
-
-                    if (player.isOnline()) MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_take_someones_position"), placeholders);
-                    if (opponentPlayer.isOnline()) MessageUtil.send(opponentPlayer.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_your_position_taken"), placeholders);
+                    opponentPlayer = Bukkit.getOfflinePlayer(opponent);
+                    String opponentName = opponentPlayer.getName();
+                    if (opponentName != null) {
+                        try {
+                            Component opponentDisplayName = opponentPlayer.isOnline() ? opponentPlayer.getPlayer().displayName() : Component.text(opponentName);
+                            placeholderSet.add(Placeholder.component("opponent_displayname", opponentDisplayName));
+                            placeholderSet.add(Placeholder.unparsed("opponent_name", opponentName));
+                            parsedOpponentDisplayName = true;
+                        } catch (Exception ignored) {}
+                    }
                 }
 
                 TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[0]);
 
-                if (newPos == 0 && opponent != null) {
+                if (opponentPlayer != null) {
+                    if (player.isOnline() && parsedOpponentDisplayName) {
+                        MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_take_someones_position"), placeholders);
+                    }
+                    if (opponentPlayer.isOnline()) {
+                        MessageUtil.send(opponentPlayer.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_your_position_taken"), placeholders);
+                    }
+                }
+
+                if (newPos == 0 && opponent != null && parsedOpponentDisplayName) {
                     MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_take_lead"), placeholders);
                 } else if (newPos == 9) {
                     MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_get_in_top_10"), placeholders);
@@ -315,6 +326,198 @@ public class LeaderboardManager {
             if (stats != null) {
                 stats.setPosition(position);
             }
+        }
+    }
+
+    public void validateAndFixLeaderboard() {
+        plugin.getLogger().info("Leaderboard validation: Starting validation task asynchronously...");
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                Map<Job, Set<UUID>> jobToUuids = new HashMap<>();
+                boolean isDatabase = plugin.getStorage() instanceof me.usainsrht.ujobs.storage.DatabaseStorage;
+
+                // Phase 1: Gather UUIDs under synchronization
+                synchronized (leaderboardLock) {
+                    for (Job job : plugin.getJobManager().getJobs().values()) {
+                        UUID[] currentLeaderboard = leaderboardJobCache.get(job);
+                        if (currentLeaderboard == null) continue;
+
+                        Set<UUID> uuids = new LinkedHashSet<>();
+                        for (UUID uuid : currentLeaderboard) {
+                            if (uuid != null) {
+                                uuids.add(uuid);
+                            }
+                        }
+                        leaderboardPlayerCache.forEach((uuid, pData) -> {
+                            if (pData.getLeaderboardStats().containsKey(job)) {
+                                uuids.add(uuid);
+                            }
+                        });
+                        jobToUuids.put(job, uuids);
+                    }
+                }
+
+                // Phase 2: Asynchronous Validation (No Lock)
+                // We resolve names and database levels without holding the lock.
+                Map<UUID, String> uuidToName = new HashMap<>();
+                Map<Job, Map<UUID, Integer>> jobToValidatedLevels = new HashMap<>();
+
+                for (Map.Entry<Job, Set<UUID>> entry : jobToUuids.entrySet()) {
+                    Job job = entry.getKey();
+                    Map<UUID, Integer> validatedLevels = new HashMap<>();
+                    jobToValidatedLevels.put(job, validatedLevels);
+
+                    for (UUID uuid : entry.getValue()) {
+                        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                        String name = offlinePlayer.getName();
+                        if (name == null) {
+                            continue; // Will be removed in Phase 3
+                        }
+                        uuidToName.put(uuid, name);
+
+                        int level = -1;
+                        if (isDatabase) {
+                            try {
+                                PlayerJobData jobData = plugin.getStorage().load(uuid).join();
+                                if (jobData != null && jobData.getJobStats().containsKey(job.getId())) {
+                                    level = jobData.getJobStats(job.getId()).getLevel();
+                                }
+                            } catch (Exception e) {
+                                plugin.getLogger().log(java.util.logging.Level.WARNING, "Failed to load player data from database during validation for UUID: " + uuid, e);
+                            }
+                        } else {
+                            // Trust the current cache level (will be read under lock in Phase 3)
+                            level = -2;
+                        }
+                        validatedLevels.put(uuid, level);
+                    }
+                }
+
+                // Phase 3: Apply Updates under synchronization
+                synchronized (leaderboardLock) {
+                    boolean modified = false;
+
+                    for (Job job : plugin.getJobManager().getJobs().values()) {
+                        UUID[] currentLeaderboard = leaderboardJobCache.get(job);
+                        if (currentLeaderboard == null) continue;
+
+                        Set<UUID> uuids = jobToUuids.getOrDefault(job, Collections.emptySet());
+                        Map<UUID, Integer> validatedLevels = jobToValidatedLevels.getOrDefault(job, Collections.emptyMap());
+
+                        List<ValidPlayerEntry> validEntries = new ArrayList<>();
+
+                        for (UUID uuid : uuids) {
+                            String name = uuidToName.get(uuid);
+                            if (name == null) {
+                                plugin.getLogger().warning("Leaderboard validation: Removed player with unknown name/never joined (UUID: " + uuid + ") from job: " + job.getId());
+                                modified = true;
+                                continue;
+                            }
+
+                            int level = -1;
+                            if (isDatabase) {
+                                int dbLevel = validatedLevels.getOrDefault(uuid, -1);
+                                // If the player's level on the server has been updated in the meantime, use the larger/current one
+                                int currentServerLevel = getLevel(uuid, job);
+                                level = Math.max(dbLevel, currentServerLevel);
+
+                                if (level <= 0) {
+                                    plugin.getLogger().warning("Leaderboard validation: Removed player " + name + " (UUID: " + uuid + ") from job: " + job.getId() + " because their level is " + level);
+                                    modified = true;
+                                    continue;
+                                }
+                            } else {
+                                // Trust cache level if PDC
+                                PlayerLeaderboardData pData = leaderboardPlayerCache.get(uuid);
+                                if (pData != null && pData.getLeaderboardStats().containsKey(job)) {
+                                    level = pData.getLeaderboardStats().get(job).getLevel();
+                                }
+                                if (level <= 0) {
+                                    modified = true;
+                                    continue;
+                                }
+                            }
+
+                            validEntries.add(new ValidPlayerEntry(uuid, level));
+                        }
+
+                        // Sort entries by level (descending)
+                        validEntries.sort((e1, e2) -> {
+                            int c = Integer.compare(e2.level, e1.level);
+                            if (c != 0) return c;
+                            return e1.uuid.compareTo(e2.uuid); // Stable ordering
+                        });
+
+                        // Compare with current leaderboard to see if it changed
+                        int top = plugin.getConfig().getInt("leaderboard.calculate_top", 100);
+                        UUID[] newLeaderboard = new UUID[top];
+                        boolean changed = false;
+
+                        for (int i = 0; i < top; i++) {
+                            UUID newUuid = (i < validEntries.size()) ? validEntries.get(i).uuid : null;
+                            UUID oldUuid = currentLeaderboard[i];
+                            if (!Objects.equals(newUuid, oldUuid)) {
+                                changed = true;
+                            }
+                            newLeaderboard[i] = newUuid;
+                        }
+
+                        // Also check if any levels in cache changed
+                        for (int i = 0; i < validEntries.size() && i < top; i++) {
+                            ValidPlayerEntry entry = validEntries.get(i);
+                            PlayerLeaderboardData pData = leaderboardPlayerCache.get(entry.uuid);
+                            if (pData != null) {
+                                PlayerLeaderboardData.LeaderboardStats stats = pData.getLeaderboardStats().get(job);
+                                if (stats == null || stats.getLevel() != entry.level || stats.getPosition() != i) {
+                                    changed = true;
+                                }
+                            } else {
+                                changed = true;
+                            }
+                        }
+
+                        if (changed) {
+                            modified = true;
+
+                            // Clear current entries for this job in cache
+                            leaderboardPlayerCache.forEach((uuid, pData) -> {
+                                pData.getLeaderboardStats().remove(job);
+                            });
+
+                            // Rebuild cache for this job
+                            for (int i = 0; i < validEntries.size() && i < top; i++) {
+                                ValidPlayerEntry entry = validEntries.get(i);
+                                leaderboardPlayerCache.computeIfAbsent(entry.uuid, PlayerLeaderboardData::new)
+                                        .getLeaderboardStats().put(job, new PlayerLeaderboardData.LeaderboardStats(i, entry.level));
+                            }
+
+                            leaderboardJobCache.put(job, newLeaderboard);
+                        }
+                    }
+
+                    // Cleanup leaderboardPlayerCache for any entries with no stats left
+                    leaderboardPlayerCache.entrySet().removeIf(entry -> entry.getValue().getLeaderboardStats().isEmpty());
+
+                    if (modified) {
+                        plugin.getLogger().info("Leaderboard validation: Inconsistencies fixed, saving updated leaderboard...");
+                        save();
+                    } else {
+                        plugin.getLogger().info("Leaderboard validation: All leaderboards are valid.");
+                    }
+                }
+            } catch (Exception e) {
+                plugin.getLogger().log(java.util.logging.Level.SEVERE, "An error occurred during async leaderboard validation", e);
+            }
+        });
+    }
+
+    private static class ValidPlayerEntry {
+        final UUID uuid;
+        final int level;
+
+        ValidPlayerEntry(UUID uuid, int level) {
+            this.uuid = uuid;
+            this.level = level;
         }
     }
 }

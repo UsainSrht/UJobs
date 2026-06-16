@@ -114,6 +114,7 @@ public final class UJobsPlugin extends JavaPlugin {
             configManager.loadConfigs();
             jobManager.loadJobs();
             leaderboardManager.load(configManager.getLeaderboardConfig());
+            leaderboardManager.validateAndFixLeaderboard();
 
             getLogger().info("All managers initialized successfully!");
         } catch (Exception e) {
