@@ -71,6 +71,10 @@
 
     <repositories>
         <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>papermc-repo</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
@@ -129,7 +133,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.UsainSrht</groupId>
+            <groupId>me.usainsrht</groupId>
             <artifactId>UTimber</artifactId>
             <version>1.2.0</version>
             <scope>provided</scope>
