@@ -10,7 +10,7 @@ import me.usainsrht.ujobs.listeners.JoinListener;
 import me.usainsrht.ujobs.listeners.QuitListener;
 import me.usainsrht.ujobs.listeners.SaveListener;
 import me.usainsrht.ujobs.listeners.job_actions.*;
-import me.usainsrht.ujobs.listeners.job_actions.timber.TreeFallListener;
+import me.usainsrht.ujobs.listeners.job_actions.timber.UTimberListener;
 import me.usainsrht.ujobs.managers.*;
 import me.usainsrht.ujobs.models.BuiltInActions;
 import me.usainsrht.ujobs.placeholders.JobPlaceholders;
@@ -136,8 +136,8 @@ public final class UJobsPlugin extends JavaPlugin {
         // job listeners
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
             getServer().getPluginManager().registerEvents(new BreakListener(jobManager), this);
-            if (getServer().getPluginManager().isPluginEnabled("UltimateTimber")) {
-                getServer().getPluginManager().registerEvents(new TreeFallListener(jobManager), this);
+            if (getServer().getPluginManager().isPluginEnabled("UTimber")) {
+                getServer().getPluginManager().registerEvents(new UTimberListener(jobManager), this);
             }
         }
         if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {

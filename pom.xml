@@ -6,7 +6,7 @@
 
     <groupId>me.usainsrht</groupId>
     <artifactId>UJobs</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <packaging>jar</packaging>
 
     <name>UJobs</name>
@@ -129,11 +129,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.songoda</groupId>
-            <artifactId>ultimatetimber</artifactId>
-            <systemPath>${project.basedir}/ultimatetimber-4.7.1.jar</systemPath>
-            <version>4.7.1</version>
-            <scope>system</scope>
+            <groupId>com.github.UsainSrht</groupId>
+            <artifactId>UTimber</artifactId>
+            <version>1.2.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
