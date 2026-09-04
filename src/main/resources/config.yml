@@ -62,6 +62,8 @@ expinfo:
         - " <primary><14_action_value> <secondary><14_exp><gray><symbol_exp> <primary><14_money><gray><symbol_money> "
         - " <primary><15_action_value> <secondary><15_exp><gray><symbol_exp> <primary><15_money><gray><symbol_money> "
         - ""
+        - " <gray>Rates shown are yours at <primary><level> <gray>level (<secondary>x<multiplier><gray> income)."
+        - ""
         - " <primary>LEFT ↓ <dark_gray>| <secondary>RIGHT ↑ "
         - " <gold>ℹ <primary>SHIFT <gray>click multiplies by 5."
 leaderboard:
@@ -101,6 +103,7 @@ gui:
       - " <gray>In <job> <gray>skill: "
       - "  <gray>you are <primary><position><gray>. on the leaderboard."
       - "  <gray>so far you have earned <primary><total_money><money_symbol><gray>."
+      - "  <gray>your income multiplier is <primary>x<multiplier><gray>."
       - ""
       - " <gray>Click <primary>LEFT <gray>to go to Leaderboard."
       - " <gray>Click <primary>RIGHT <gray>to go to Info."

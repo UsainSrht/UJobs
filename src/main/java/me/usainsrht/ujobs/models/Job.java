@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 @Getter
 public class Job {
@@ -26,11 +28,13 @@ public class Job {
     private YamlMessage levelUpMessage;
     private List<String> levelUpCommands;
     private BossBarConfig bossBarConfig;
+    private NavigableMap<Integer, Double> incomeMultipliers;
     private final Map<Action, Map<String, ActionReward>> actions;
     private final List<JobInfoLine> infoLines;
 
     public Job(String id, Component name, Material icon, String levelEquation,
-               YamlMessage levelUpMessage, List<String> levelUpCommands, BossBarConfig bossBarConfig) {
+               YamlMessage levelUpMessage, List<String> levelUpCommands, BossBarConfig bossBarConfig,
+               NavigableMap<Integer, Double> incomeMultipliers) {
         this.id = id;
         this.name = name;
         this.icon = icon;
@@ -38,6 +42,7 @@ public class Job {
         this.levelUpMessage = levelUpMessage;
         this.levelUpCommands = levelUpCommands;
         this.bossBarConfig = bossBarConfig;
+        this.incomeMultipliers = incomeMultipliers != null ? incomeMultipliers : new TreeMap<>();
         this.actions = new HashMap<>();
         this.infoLines = new ArrayList<>();
     }
@@ -51,6 +56,7 @@ public class Job {
         this.levelUpCommands = otherJobInstance.levelUpCommands;
         this.levelUpMessage = otherJobInstance.levelUpMessage;
         this.bossBarConfig = otherJobInstance.bossBarConfig;
+        this.incomeMultipliers = otherJobInstance.incomeMultipliers;
         this.actions.clear();
         this.actions.putAll(otherJobInstance.actions);
         this.infoLines.clear();
@@ -96,6 +102,17 @@ public class Job {
     public ActionReward getActionReward(Action action, String value) {
         Map<String, ActionReward> actionMap = actions.get(action);
         return actionMap != null ? actionMap.get(value) : null;
+    }
+
+    /**
+     * Money multiplier that applies at the given level. Every configured entry applies from its
+     * level onwards, so the highest configured level that is not above {@code level} wins.
+     * Returns 1.0 when the job has no income multipliers configured.
+     */
+    public double getIncomeMultiplier(int level) {
+        if (incomeMultipliers == null || incomeMultipliers.isEmpty()) return 1.0;
+        Map.Entry<Integer, Double> entry = incomeMultipliers.floorEntry(level);
+        return entry != null ? entry.getValue() : 1.0;
     }
 
     public long calculateExpForLevel(int level) {

@@ -16,6 +16,7 @@ import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.PlayerJobData;
 import me.usainsrht.ujobs.utils.JobExpUtils;
 import me.usainsrht.ujobs.utils.MessageUtil;
+import me.usainsrht.ujobs.utils.MultiplierUtil;
 import me.usainsrht.ujobs.yaml.YamlCommand;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
@@ -43,6 +44,7 @@ public class MainCommand {
                         .executes(context -> {
                             plugin.getConfigManager().reload();
                             plugin.getJobManager().loadJobs();
+                            MultiplierUtil.clearCache(); // so permission changes apply immediately
 
                             MessageUtil.send(context.getSource().getSender(), plugin.getConfigManager().getMessage("reload"));
 

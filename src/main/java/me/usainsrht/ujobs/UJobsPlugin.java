@@ -17,6 +17,7 @@ import me.usainsrht.ujobs.placeholders.JobPlaceholders;
 import me.usainsrht.ujobs.storage.DatabaseStorage;
 import me.usainsrht.ujobs.storage.PDCStorage;
 import me.usainsrht.ujobs.storage.Storage;
+import me.usainsrht.ujobs.utils.MultiplierUtil;
 import me.usainsrht.ujobs.yaml.YamlCommand;
 import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -100,6 +101,9 @@ public final class UJobsPlugin extends JavaPlugin {
         if (bossBarManager != null) {
             bossBarManager.removeAllBossBars();
         }
+
+        // static cache, so it would outlive this plugin instance on a reload
+        MultiplierUtil.clearCache();
 
         getLogger().info("UJobs has been disabled!");
     }

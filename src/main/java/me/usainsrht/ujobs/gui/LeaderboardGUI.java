@@ -264,7 +264,7 @@ public class LeaderboardGUI implements JobGUI {
 
         if (e.getSlot() == rightButtonSlot) {
             // Open exp information GUI
-            new JobInfoGUI(plugin).open(player);
+            new JobInfoGUI(plugin, player.getUniqueId()).open(player);
             return;
         }
 
