@@ -147,10 +147,18 @@ public class JobExpUtils {
                 Matcher m = Pattern.compile("([0-9()+\\-*/.]+)").matcher(parsedCmd);
                 while (m.find()) all.add(m.group(1));
                 for (String math : all) {
+                    // Skip plain numbers or negative values without arithmetic operators (+, *, /, (, ) or binary -)
+                    // Using lastIndexOf('-') <= 0 allows negative values like -200 to be skipped while evaluating subtraction like 10-5 or -10-5
+                    if (!math.contains("+") && !math.contains("*") && !math.contains("/") && !math.contains("(") && !math.contains(")") && math.lastIndexOf('-') <= 0) {
+                        continue;
+                    }
                     try {
                         double result = MathUtil.eval(math);
-                        parsedCmd = parsedCmd.replace(math, String.valueOf(result));
+                        // Format whole numbers as integers to avoid passing doubles (e.g. 8.0, 100.0) to commands expecting ints
+                        String formatted = (result == (long) result) ? String.valueOf((long) result) : String.valueOf(result);
+                        parsedCmd = parsedCmd.replace(math, formatted);
                     } catch (Exception ignored) {
+                        // Ignore invalid math expressions
                     }
                 }
                 parsedCmd = parsedCmd.replace("<player>", player.getName());
