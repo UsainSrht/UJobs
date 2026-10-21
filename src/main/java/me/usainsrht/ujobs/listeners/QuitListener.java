@@ -31,7 +31,7 @@ public class QuitListener implements Listener {
         if (storage instanceof PDCStorage pdcStorage) {
             pdcStorage.saveNow(player, playerJobData);
         } else if (storage instanceof DatabaseStorage databaseStorage) {
-            databaseStorage.saveNow(uuid);
+            databaseStorage.saveAsync(uuid, playerJobData);
         } else {
             storage.save(uuid);
         }

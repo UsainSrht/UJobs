@@ -59,6 +59,10 @@ public class BuiltInActions {
     }
 
     public static Action get(String name) {
+        if (name == null) return null;
+        Action action = ActionRegistry.get(name);
+        if (action != null) return action;
+
         for (Entity entity : Entity.values()) {
             if (entity.getName().equalsIgnoreCase(name)) {
                 return entity;

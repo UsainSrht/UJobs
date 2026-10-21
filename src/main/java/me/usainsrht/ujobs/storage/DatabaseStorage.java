@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -31,12 +32,14 @@ public class DatabaseStorage implements Storage {
     private final Map<UUID, PlayerJobData> cache;
     private final PDCStorage pdcStorage;
     private final boolean pdcFallback;
+    private final java.util.concurrent.ExecutorService saveExecutor;
 
     public DatabaseStorage(UJobsPlugin plugin, String storageType) {
         this.plugin = plugin;
         this.cache = new ConcurrentHashMap<>();
         this.pdcStorage = new PDCStorage(plugin);
         this.pdcFallback = plugin.getConfig().getBoolean("storage.pdc_fallback", true);
+        this.saveExecutor = java.util.concurrent.Executors.newFixedThreadPool(2);
         this.dataSource = createDataSource(storageType);
         initializeSchema();
     }
@@ -50,8 +53,12 @@ public class DatabaseStorage implements Storage {
         if (playerJobData == null) {
             return;
         }
+        saveAsync(uuid, playerJobData);
+    }
 
-        CompletableFuture.runAsync(() -> {
+    public void saveAsync(UUID uuid, PlayerJobData playerJobData) {
+        if (uuid == null || playerJobData == null) return;
+        saveExecutor.submit(() -> {
             try {
                 persistPlayerData(uuid, playerJobData);
             } catch (SQLException e) {
@@ -90,6 +97,23 @@ public class DatabaseStorage implements Storage {
 
     @Override
     public void save() {
+        Map<UUID, PlayerJobData> snapshot = new HashMap<>(cache);
+        saveExecutor.submit(() -> {
+            for (Map.Entry<UUID, PlayerJobData> entry : snapshot.entrySet()) {
+                try {
+                    persistPlayerData(entry.getKey(), entry.getValue());
+                } catch (SQLException e) {
+                    plugin.getLogger().log(Level.WARNING, "Failed to save player data to database for " + entry.getKey(), e);
+                }
+            }
+        });
+
+        if (pdcFallback) {
+            pdcStorage.save();
+        }
+    }
+
+    public void saveSync() {
         for (Map.Entry<UUID, PlayerJobData> entry : cache.entrySet()) {
             try {
                 persistPlayerData(entry.getKey(), entry.getValue());
@@ -207,7 +231,16 @@ public class DatabaseStorage implements Storage {
 
     @Override
     public void close() {
-        save();
+        saveSync();
+        saveExecutor.shutdown();
+        try {
+            if (!saveExecutor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+                saveExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            saveExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
         dataSource.close();
     }
 

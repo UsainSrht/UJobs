@@ -1,13 +1,19 @@
 package me.usainsrht.ujobs.utils;
 
 import me.usainsrht.ujobs.UJobsPlugin;
+import me.usainsrht.ujobs.api.events.PlayerJobExpGainEvent;
+import me.usainsrht.ujobs.api.events.PlayerJobLevelUpEvent;
+import me.usainsrht.ujobs.models.Action;
 import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.PlayerJobData;
+import me.usainsrht.ujobs.yaml.YamlMessage;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +24,10 @@ import java.util.regex.Pattern;
 public class JobExpUtils {
 
     public static void processJobExp(Player player, Job job, Job.ActionReward reward, int amount) {
+        processJobExp(player, job, null, null, reward, amount);
+    }
+
+    public static void processJobExp(Player player, Job job, @Nullable Action action, @Nullable String actionValue, Job.ActionReward reward, int amount) {
         UJobsPlugin plugin = UJobsPlugin.instance;
         if (plugin == null || player == null || job == null || reward == null || amount <= 0) {
             return;
@@ -29,31 +39,65 @@ public class JobExpUtils {
         }
         PlayerJobData.JobStats stats = playerData.getJobStats(job.getId());
 
-        // Calculate rewards
-        double expGain = reward.getExp() * amount;
-        double moneyGain = reward.getMoney() * amount;
+        // Fire PlayerJobExpGainEvent
+        boolean isAsync = !Bukkit.isPrimaryThread();
+        PlayerJobExpGainEvent expEvent = new PlayerJobExpGainEvent(
+                player, job, action, actionValue, reward.getExp(), reward.getMoney(), amount, isAsync
+        );
+        Bukkit.getPluginManager().callEvent(expEvent);
+
+        if (expEvent.isCancelled()) {
+            return;
+        }
+
+        // Use modified values from event
+        double effectiveExp = expEvent.getExp();
+        double effectiveMoney = expEvent.getMoney();
+        int effectiveAmount = expEvent.getAmount();
+
+        if (effectiveAmount <= 0) {
+            return;
+        }
+
+        double expGain = effectiveExp * effectiveAmount;
+        double moneyGain = effectiveMoney * effectiveAmount;
 
         boolean leveledUp = false;
         int newLevel;
         double newExp;
+        List<String> commandsToRun = null;
+        YamlMessage messageToSend = null;
 
         synchronized (stats) {
-            // Current stats
             int currentLevel = stats.getLevel();
             double currentExp = stats.getExp();
             newExp = currentExp + expGain;
 
-            // Calculate required exp for next level
             long requiredExp = job.calculateExpForLevel(currentLevel);
 
-            // Check for level up
             if (newExp >= requiredExp) {
-                leveledUp = true;
-                newLevel = currentLevel + 1;
-                newExp = newExp - requiredExp; // Carry over excess exp
+                int targetLevel = currentLevel + 1;
 
-                stats.setLevel(newLevel);
-                stats.setExp(newExp);
+                PlayerJobLevelUpEvent levelUpEvent = new PlayerJobLevelUpEvent(
+                        player, job, currentLevel, targetLevel,
+                        new ArrayList<>(job.getLevelUpCommands()), job.getLevelUpMessage(), isAsync
+                );
+                Bukkit.getPluginManager().callEvent(levelUpEvent);
+
+                if (!levelUpEvent.isCancelled()) {
+                    leveledUp = true;
+                    newLevel = levelUpEvent.getToLevel();
+                    newExp = newExp - requiredExp; // Carry over excess exp
+
+                    stats.setLevel(newLevel);
+                    stats.setExp(newExp);
+
+                    commandsToRun = levelUpEvent.getCommands();
+                    messageToSend = levelUpEvent.getMessage();
+                } else {
+                    newLevel = currentLevel;
+                    stats.setExp(Math.min(newExp, requiredExp));
+                }
             } else {
                 newLevel = currentLevel;
                 stats.setExp(newExp);
@@ -61,13 +105,16 @@ public class JobExpUtils {
         }
 
         if (leveledUp) {
-            // Handle level up
-            handleLevelUp(player, job, newLevel);
+            handleLevelUp(player, job, newLevel, commandsToRun, messageToSend);
         }
 
         // Add money
         if (moneyGain > 0 && plugin.getEconomy() != null) {
-            plugin.getEconomy().depositPlayer(player, moneyGain);
+            final double finalMoneyGain = moneyGain;
+            plugin.getMorePaperLib().scheduling().entitySpecificScheduler(player).run(
+                    () -> plugin.getEconomy().depositPlayer(player, finalMoneyGain),
+                    null
+            );
             synchronized (stats) {
                 stats.setTotalMoney(stats.getTotalMoney() + moneyGain);
             }
@@ -77,47 +124,53 @@ public class JobExpUtils {
         if (plugin.getConfig().getBoolean("progress_bossbars", true)) {
             showJobBossBar(player, job, newLevel, newExp, expGain, leveledUp);
         }
-
-        // Save data
-        //plugin.getStorage().save(playerData.getUuid());
     }
 
     public static void handleLevelUp(Player player, Job job, int newLevel) {
+        handleLevelUp(player, job, newLevel, job.getLevelUpCommands(), job.getLevelUpMessage());
+    }
+
+    public static void handleLevelUp(Player player, Job job, int newLevel, @Nullable List<String> commands, @Nullable YamlMessage message) {
         UJobsPlugin plugin = UJobsPlugin.instance;
+        if (plugin == null || player == null || job == null) return;
 
-        if (job.getLevelEquation() != null) MessageUtil.send(player, job.getLevelUpMessage(),
-                Placeholder.unparsed("player", player.getName()),
-                Formatter.number("level", newLevel));
+        if (message != null) {
+            MessageUtil.send(player, message,
+                    Placeholder.unparsed("player", player.getName()),
+                    Formatter.number("level", newLevel));
+        }
 
-        for (String cmd : job.getLevelUpCommands()) {
-            String parsedCmd = cmd
-                    .replace("<level>", String.valueOf(newLevel));
-            List<String> all = new ArrayList<>();
-            Matcher m = Pattern.compile("([0-9()+\\-*/.]+)").matcher(parsedCmd);
-            while (m.find()) all.add(m.group(1));
-            for (String math : all) {
-                try {
-                    double result = MathUtil.eval(math);
-                    parsedCmd = parsedCmd.replace(math, String.valueOf(result));
-                } catch (Exception e) {
-                    // Ignore invalid math expressions
+        if (commands != null) {
+            for (String cmd : commands) {
+                String parsedCmd = cmd.replace("<level>", String.valueOf(newLevel));
+                List<String> all = new ArrayList<>();
+                Matcher m = Pattern.compile("([0-9()+\\-*/.]+)").matcher(parsedCmd);
+                while (m.find()) all.add(m.group(1));
+                for (String math : all) {
+                    try {
+                        double result = MathUtil.eval(math);
+                        parsedCmd = parsedCmd.replace(math, String.valueOf(result));
+                    } catch (Exception ignored) {
+                    }
                 }
+                parsedCmd = parsedCmd.replace("<player>", player.getName());
+                String finalParsedCmd = parsedCmd;
+                plugin.getMorePaperLib().scheduling().globalRegionalScheduler().run(() ->
+                        plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), finalParsedCmd));
             }
-            parsedCmd = parsedCmd.replace("<player>", player.getName());
-            String finalParsedCmd = parsedCmd;
-            plugin.getMorePaperLib().scheduling().globalRegionalScheduler().run(() ->
-                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), finalParsedCmd));
         }
 
         // Show level up boss bar animation
         showLevelUpAnimation(player, job, newLevel);
 
-        // Check leaderboard changes
+        // Check leaderboard changes asynchronously
         plugin.getLeaderboardManager().checkLeaderboardChange(player.getUniqueId(), job, newLevel);
     }
 
     public static void showJobBossBar(Player player, Job job, int level, double exp, double expGain, boolean leveledUp) {
         UJobsPlugin plugin = UJobsPlugin.instance;
+        if (plugin == null || player == null || job == null) return;
+
         long requiredExp = job.calculateExpForLevel(level);
         double progress = Math.min(1.0, exp / requiredExp);
 
@@ -144,6 +197,8 @@ public class JobExpUtils {
 
     public static void showLevelUpAnimation(Player player, Job job, int newLevel) {
         UJobsPlugin plugin = UJobsPlugin.instance;
+        if (plugin == null || player == null || job == null) return;
+
         String levelUpTemplate = job.getBossBarConfig().getLevelUpTemplate();
 
         AtomicInteger ticks = new AtomicInteger(0);

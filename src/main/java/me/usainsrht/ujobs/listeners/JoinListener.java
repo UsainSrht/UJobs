@@ -20,6 +20,9 @@ public class JoinListener implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         UUID uuid = player.getUniqueId();
+        if (plugin.getLeaderboardManager() != null) {
+            plugin.getLeaderboardManager().cachePlayerName(uuid, player.getName());
+        }
         plugin.getStorage().load(uuid);
     }
 

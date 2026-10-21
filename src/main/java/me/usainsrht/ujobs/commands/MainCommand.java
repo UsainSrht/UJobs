@@ -110,7 +110,10 @@ public class MainCommand {
                                                     if (plugin.getJobManager().getJobs().containsKey(jobId)) {
                                                         Job job = plugin.getJobManager().getJobs().get(jobId);
                                                         Job.ActionReward reward = new Job.ActionReward(amount, 0);
-                                                        JobExpUtils.processJobExp(target, job, reward,1);
+                                                        plugin.getMorePaperLib().scheduling().entitySpecificScheduler(target).run(
+                                                                () -> JobExpUtils.processJobExp(target, job, reward, 1),
+                                                                null
+                                                        );
                                                         return Command.SINGLE_SUCCESS;
                                                     } else {
                                                         context.getSource().getSender().sendMessage("Job not found: " + jobId);
@@ -150,14 +153,20 @@ public class MainCommand {
                                                     int level = IntegerArgumentType.getInteger(context, "level");
 
                                                     if (plugin.getJobManager().getJobs().containsKey(jobId)) {
-                                                        PlayerJobData playerJobData = plugin.getStorage().getCached(target.getUniqueId());
-                                                        if (playerJobData == null) {
-                                                            context.getSource().getSender().sendMessage("Player data is not loaded yet for: " + target.getName());
-                                                            return -1;
-                                                        }
-                                                        PlayerJobData.JobStats jobStats = playerJobData.getJobStats(jobId);
-                                                        jobStats.setLevel(level);
-                                                        jobStats.setExp(0);
+                                                        Job job = plugin.getJobManager().getJobs().get(jobId);
+                                                        plugin.getMorePaperLib().scheduling().entitySpecificScheduler(target).run(() -> {
+                                                            PlayerJobData playerJobData = plugin.getStorage().getCached(target.getUniqueId());
+                                                            if (playerJobData == null) {
+                                                                context.getSource().getSender().sendMessage("Player data is not loaded yet for: " + target.getName());
+                                                                return;
+                                                            }
+                                                            PlayerJobData.JobStats jobStats = playerJobData.getJobStats(jobId);
+                                                            synchronized (jobStats) {
+                                                                jobStats.setLevel(level);
+                                                                jobStats.setExp(0);
+                                                            }
+                                                            plugin.getLeaderboardManager().checkLeaderboardChange(target.getUniqueId(), job, level);
+                                                        }, null);
                                                         return Command.SINGLE_SUCCESS;
                                                     } else {
                                                         context.getSource().getSender().sendMessage("Job not found: " + jobId);

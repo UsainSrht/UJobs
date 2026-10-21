@@ -164,8 +164,7 @@ public class LeaderboardGUI implements JobGUI {
 
             if (topPlayers != null && r < topPlayers.length && topPlayers[r] != null) {
                 UUID playerUuid = topPlayers[r];
-                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUuid);
-                playerName = offlinePlayer.getName() != null ? offlinePlayer.getName() : "?";
+                playerName = plugin.getLeaderboardManager().getPlayerName(playerUuid);
 
                 PlayerLeaderboardData leaderboardData = plugin.getLeaderboardManager().getPlayerData(playerUuid);
                 if (leaderboardData != null && leaderboardData.getLeaderboardStats().containsKey(job)) {
@@ -233,7 +232,11 @@ public class LeaderboardGUI implements JobGUI {
     }
 
     public void open(Player player) {
-        player.openInventory(inventory);
+        if (player == null || !player.isOnline()) return;
+        plugin.getMorePaperLib().scheduling().entitySpecificScheduler(player).run(
+                () -> player.openInventory(inventory),
+                null
+        );
     }
 
     @Override

@@ -142,7 +142,11 @@ public class MainJobGUI implements JobGUI {
     }
 
     public void open(Player player) {
-        player.openInventory(inventory);
+        if (player == null || !player.isOnline()) return;
+        plugin.getMorePaperLib().scheduling().entitySpecificScheduler(player).run(
+                () -> player.openInventory(inventory),
+                null
+        );
     }
 
     @Override

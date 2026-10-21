@@ -12,11 +12,13 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +30,7 @@ public class LeaderboardManager {
     private final UJobsPlugin plugin;
     private final Map<UUID, PlayerLeaderboardData> leaderboardPlayerCache;
     private final Map<Job, UUID[]> leaderboardJobCache;
+    private final Map<UUID, String> nameCache;
     private final Object leaderboardLock = new Object();
     private final ExecutorService fileWriteExecutor = Executors.newSingleThreadExecutor();
 
@@ -35,6 +38,32 @@ public class LeaderboardManager {
         this.plugin = plugin;
         this.leaderboardPlayerCache = new ConcurrentHashMap<>();
         this.leaderboardJobCache = new ConcurrentHashMap<>();
+        this.nameCache = new ConcurrentHashMap<>();
+    }
+
+    public void ensureJobInCache(Job job) {
+        if (job == null) return;
+        synchronized (leaderboardLock) {
+            int top = plugin.getConfig().getInt("leaderboard.calculate_top", 100);
+            leaderboardJobCache.computeIfAbsent(job, k -> new UUID[top]);
+        }
+    }
+
+    public String getPlayerName(UUID uuid) {
+        if (uuid == null) return "?";
+        return nameCache.computeIfAbsent(uuid, id -> {
+            Player online = Bukkit.getPlayer(id);
+            if (online != null) return online.getName();
+            OfflinePlayer offline = Bukkit.getOfflinePlayer(id);
+            String name = offline.getName();
+            return name != null ? name : "?";
+        });
+    }
+
+    public void cachePlayerName(UUID uuid, String name) {
+        if (uuid != null && name != null) {
+            nameCache.put(uuid, name);
+        }
     }
 
     public void load(ConfigurationSection yml) {
@@ -221,133 +250,142 @@ public class LeaderboardManager {
     }
 
     public void checkLeaderboardChange(UUID uuid, Job job, int level) {
-        synchronized (leaderboardLock) {
-            UUID[] leaderboard = leaderboardJobCache.get(job);
-            if (leaderboard == null) return;
+        CompletableFuture.runAsync(() -> {
+            synchronized (leaderboardLock) {
+                UUID[] leaderboard = leaderboardJobCache.get(job);
+                if (leaderboard == null) return;
 
-            // 1. Find current position
-            int currentPos = -1;
-            for (int i = 0; i < leaderboard.length; i++) {
-                if (uuid.equals(leaderboard[i])) {
-                    currentPos = i;
-                    break;
+                // 1. Find current position
+                int currentPos = -1;
+                for (int i = 0; i < leaderboard.length; i++) {
+                    if (uuid.equals(leaderboard[i])) {
+                        currentPos = i;
+                        break;
+                    }
                 }
-            }
 
-            // 2. Remove from array (shift up)
-            if (currentPos != -1) {
-                for (int i = currentPos; i < leaderboard.length - 1; i++) {
-                    leaderboard[i] = leaderboard[i + 1];
+                // 2. Remove from array (shift up)
+                if (currentPos != -1) {
+                    for (int i = currentPos; i < leaderboard.length - 1; i++) {
+                        leaderboard[i] = leaderboard[i + 1];
+                        if (leaderboard[i] != null) {
+                            updatePosition(leaderboard[i], job, i);
+                        }
+                    }
+                    leaderboard[leaderboard.length - 1] = null;
+                }
+
+                // 3. Update level in cache (or create if new)
+                PlayerLeaderboardData pData = leaderboardPlayerCache.computeIfAbsent(uuid, PlayerLeaderboardData::new);
+                PlayerLeaderboardData.LeaderboardStats stats = pData.getLeaderboardStats().computeIfAbsent(job, k -> new PlayerLeaderboardData.LeaderboardStats(-1, 0));
+                stats.setLevel(level);
+
+                // 4. Find new position
+                int newPos = 0;
+                while (newPos < leaderboard.length) {
+                    UUID other = leaderboard[newPos];
+                    if (other == null) break;
+                    if (level > getLevel(other, job)) break;
+                    newPos++;
+                }
+
+                // 5. Check if qualified
+                if (newPos >= leaderboard.length) {
+                    // Didn't make it. Remove from cache if it was there.
+                    if (currentPos != -1) {
+                        pData.getLeaderboardStats().remove(job);
+                        if (pData.getLeaderboardStats().isEmpty()) {
+                            leaderboardPlayerCache.remove(uuid);
+                        }
+                    }
+                    save();
+                    return;
+                }
+
+                // Fire PlayerJobLeaderboardUpdateEvent
+                me.usainsrht.ujobs.api.events.PlayerJobLeaderboardUpdateEvent updateEvent =
+                        new me.usainsrht.ujobs.api.events.PlayerJobLeaderboardUpdateEvent(uuid, job, currentPos, newPos, level, true);
+                Bukkit.getPluginManager().callEvent(updateEvent);
+                if (updateEvent.isCancelled()) {
+                    return;
+                }
+
+                // 6. Insert (shift down)
+                // Handle the one falling off
+                UUID fallen = leaderboard[leaderboard.length - 1];
+                if (fallen != null) {
+                    PlayerLeaderboardData fData = leaderboardPlayerCache.get(fallen);
+                    if (fData != null) {
+                        fData.getLeaderboardStats().remove(job);
+                        if (fData.getLeaderboardStats().isEmpty()) {
+                            leaderboardPlayerCache.remove(fallen);
+                        }
+                    }
+                }
+
+                for (int i = leaderboard.length - 1; i > newPos; i--) {
+                    leaderboard[i] = leaderboard[i - 1];
                     if (leaderboard[i] != null) {
                         updatePosition(leaderboard[i], job, i);
                     }
                 }
-                leaderboard[leaderboard.length - 1] = null;
-            }
+                leaderboard[newPos] = uuid;
+                stats.setPosition(newPos);
 
-            // 3. Update level in cache (or create if new)
-            PlayerLeaderboardData pData = leaderboardPlayerCache.computeIfAbsent(uuid, PlayerLeaderboardData::new);
-            PlayerLeaderboardData.LeaderboardStats stats = pData.getLeaderboardStats().computeIfAbsent(job, k -> new PlayerLeaderboardData.LeaderboardStats(-1, 0));
-            stats.setLevel(level);
+                // 7. Messages
+                if (currentPos == -1 || newPos < currentPos) {
+                    String playerName = getPlayerName(uuid);
+                    Player onlinePlayer = Bukkit.getPlayer(uuid);
+                    Set<TagResolver> placeholderSet = new HashSet<>();
+                    placeholderSet.add(Placeholder.component("displayname", onlinePlayer != null ? onlinePlayer.displayName() : Component.text(playerName)));
+                    placeholderSet.add(Placeholder.unparsed("name", playerName));
+                    placeholderSet.add(Formatter.number("level", level));
+                    placeholderSet.add(Formatter.number("position", newPos + 1));
+                    placeholderSet.add(Placeholder.component("job", job.getName()));
+                    try {
+                        placeholderSet.add(Placeholder.styling("primary", job.getName().children().getFirst().color()));
+                        placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
+                    } catch (Exception ignored) {}
 
-            // 4. Find new position
-            int newPos = 0;
-            while (newPos < leaderboard.length) {
-                UUID other = leaderboard[newPos];
-                if (other == null) break;
-                if (level > getLevel(other, job)) break;
-                newPos++;
-            }
-
-            // 5. Check if qualified
-            if (newPos >= leaderboard.length) {
-                // Didn't make it. Remove from cache if it was there.
-                if (currentPos != -1) {
-                    pData.getLeaderboardStats().remove(job);
-                    if (pData.getLeaderboardStats().isEmpty()) {
-                        leaderboardPlayerCache.remove(uuid);
+                    boolean parsedOpponentDisplayName = false;
+                    UUID opponent = null;
+                    if (newPos + 1 < leaderboard.length) {
+                        opponent = leaderboard[newPos + 1];
                     }
-                }
-                save();
-                return;
-            }
 
-            // 6. Insert (shift down)
-            // Handle the one falling off
-            UUID fallen = leaderboard[leaderboard.length - 1];
-            if (fallen != null) {
-                PlayerLeaderboardData fData = leaderboardPlayerCache.get(fallen);
-                if (fData != null) {
-                    fData.getLeaderboardStats().remove(job);
-                    if (fData.getLeaderboardStats().isEmpty()) {
-                        leaderboardPlayerCache.remove(fallen);
-                    }
-                }
-            }
-
-            for (int i = leaderboard.length - 1; i > newPos; i--) {
-                leaderboard[i] = leaderboard[i - 1];
-                if (leaderboard[i] != null) {
-                    updatePosition(leaderboard[i], job, i);
-                }
-            }
-            leaderboard[newPos] = uuid;
-            stats.setPosition(newPos);
-
-            // 7. Messages
-            if (currentPos == -1 || newPos < currentPos) {
-                OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-                Set<TagResolver> placeholderSet = new HashSet<>();
-                placeholderSet.add(Placeholder.component("displayname", player.isOnline() ? player.getPlayer().displayName() : Component.text(player.getName())));
-                placeholderSet.add(Placeholder.unparsed("name", player.getName()));
-                placeholderSet.add(Formatter.number("level", level));
-                placeholderSet.add(Formatter.number("position", newPos + 1));
-                placeholderSet.add(Placeholder.component("job", job.getName()));
-                try {
-                    placeholderSet.add(Placeholder.styling("primary", job.getName().children().getFirst().color()));
-                    placeholderSet.add(Placeholder.styling("secondary", job.getName().children().getLast().color()));
-                } catch (Exception ignored) {}
-
-                boolean parsedOpponentDisplayName = false;
-                UUID opponent = null;
-                if (newPos + 1 < leaderboard.length) {
-                    opponent = leaderboard[newPos + 1];
-                }
-
-                OfflinePlayer opponentPlayer = null;
-                if (opponent != null) {
-                    opponentPlayer = Bukkit.getOfflinePlayer(opponent);
-                    String opponentName = opponentPlayer.getName();
-                    if (opponentName != null) {
+                    Player opponentOnline = null;
+                    if (opponent != null) {
+                        String opponentName = getPlayerName(opponent);
+                        opponentOnline = Bukkit.getPlayer(opponent);
                         try {
-                            Component opponentDisplayName = opponentPlayer.isOnline() ? opponentPlayer.getPlayer().displayName() : Component.text(opponentName);
+                            Component opponentDisplayName = opponentOnline != null ? opponentOnline.displayName() : Component.text(opponentName);
                             placeholderSet.add(Placeholder.component("opponent_displayname", opponentDisplayName));
                             placeholderSet.add(Placeholder.unparsed("opponent_name", opponentName));
                             parsedOpponentDisplayName = true;
                         } catch (Exception ignored) {}
                     }
-                }
 
-                TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[0]);
+                    TagResolver[] placeholders = placeholderSet.toArray(new TagResolver[0]);
 
-                if (opponentPlayer != null) {
-                    if (player.isOnline() && parsedOpponentDisplayName) {
-                        MessageUtil.send(player.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_take_someones_position"), placeholders);
+                    if (opponent != null) {
+                        if (onlinePlayer != null && parsedOpponentDisplayName) {
+                            MessageUtil.send(onlinePlayer, plugin.getConfigManager().getMessage("leaderboard_take_someones_position"), placeholders);
+                        }
+                        if (opponentOnline != null) {
+                            MessageUtil.send(opponentOnline, plugin.getConfigManager().getMessage("leaderboard_your_position_taken"), placeholders);
+                        }
                     }
-                    if (opponentPlayer.isOnline()) {
-                        MessageUtil.send(opponentPlayer.getPlayer(), plugin.getConfigManager().getMessage("leaderboard_your_position_taken"), placeholders);
+
+                    if (newPos == 0 && opponent != null && parsedOpponentDisplayName) {
+                        MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_take_lead"), placeholders);
+                    } else if (newPos == 9) {
+                        MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_get_in_top_10"), placeholders);
                     }
                 }
 
-                if (newPos == 0 && opponent != null && parsedOpponentDisplayName) {
-                    MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_take_lead"), placeholders);
-                } else if (newPos == 9) {
-                    MessageUtil.send(plugin.getServer(), plugin.getConfigManager().getMessage("leaderboard_get_in_top_10"), placeholders);
-                }
+                save();
             }
-
-            save();
-        }
+        });
     }
 
     private void updatePosition(UUID uuid, Job job, int position) {

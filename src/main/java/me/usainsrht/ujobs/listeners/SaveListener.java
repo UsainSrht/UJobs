@@ -17,8 +17,6 @@ public class SaveListener implements Listener {
     public void onSave(WorldSaveEvent event) {
         if (event.getWorld() == plugin.getServer().getWorlds().getFirst()) {
             plugin.getLeaderboardManager().save();
-            plugin.getConfigManager().saveLeaderboard();
-
             plugin.getStorage().save();
         }
     }

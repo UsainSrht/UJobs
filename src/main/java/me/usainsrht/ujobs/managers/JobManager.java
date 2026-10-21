@@ -2,6 +2,8 @@ package me.usainsrht.ujobs.managers;
 
 import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
+import me.usainsrht.ujobs.api.events.JobRegisterEvent;
+import me.usainsrht.ujobs.api.events.JobUnregisterEvent;
 import me.usainsrht.ujobs.models.*;
 import me.usainsrht.ujobs.utils.JobExpUtils;
 import me.usainsrht.ujobs.yaml.YamlMessage;
@@ -9,11 +11,12 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 @Getter
 public class JobManager {
@@ -23,8 +26,8 @@ public class JobManager {
 
     public JobManager(UJobsPlugin plugin) {
         this.plugin = plugin;
-        this.jobs = new LinkedHashMap<>();
-        this.actionJobMap = new HashMap<>();
+        this.jobs = new ConcurrentHashMap<>();
+        this.actionJobMap = new ConcurrentHashMap<>();
     }
 
     public void loadJobs() {
@@ -74,13 +77,13 @@ public class JobManager {
         String iconString = jobSection.getString("icon", "STONE");
         Material icon;
         try {
-            icon = Material.valueOf(iconString.toUpperCase());
+            icon = Material.valueOf(iconString.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             plugin.getLogger().warning("Invalid icon material for job " + jobId + ": " + iconString);
             icon = Material.STONE;
         }
 
-        String levelEquation = jobSection.getString("level_equation", "<nextlevel>*<nextlevel>*5");
+        String levelEquation = jobSection.getString("level_equation", "<next_level>*<next_level>*5");
 
         YamlMessage levelUpMessage = new YamlMessage(jobSection.get("levelup_message", ""));
 
@@ -117,14 +120,14 @@ public class JobManager {
 
         BossBar.Color color;
         try {
-            color = BossBar.Color.valueOf(bossBarSection.getString("color", "BLUE").toUpperCase());
+            color = BossBar.Color.valueOf(bossBarSection.getString("color", "BLUE").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             color = BossBar.Color.BLUE;
         }
 
         BossBar.Overlay overlay;
         try {
-            overlay = BossBar.Overlay.valueOf(bossBarSection.getString("overlay", "NOTCHED_10").toUpperCase());
+            overlay = BossBar.Overlay.valueOf(bossBarSection.getString("overlay", "NOTCHED_10").toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException e) {
             overlay = BossBar.Overlay.NOTCHED_10;
         }
@@ -134,8 +137,10 @@ public class JobManager {
 
     private void loadJobActions(Job job, ConfigurationSection actionsSection) {
         for (String actionName : actionsSection.getKeys(false)) {
-            Action action = BuiltInActions.get(actionName);
-            if (action == null) return;
+            Action action = ActionRegistry.getOrCreate(actionName);
+            if (action == null) {
+                continue;
+            }
             ConfigurationSection actionSection = actionsSection.getConfigurationSection(actionName);
             if (actionSection != null) {
                 for (String value : actionSection.getKeys(false)) {
@@ -148,19 +153,130 @@ public class JobManager {
                         JobInfoLine infoLine = new JobInfoLine(action, value, actionReward);
                         job.getInfoLines().add(infoLine);
 
-                        actionJobMap.computeIfAbsent(action, k -> new HashSet<>()).add(job.getId());
+                        actionJobMap.computeIfAbsent(action, k -> ConcurrentHashMap.newKeySet()).add(job.getId());
                     }
                 }
             }
         }
     }
 
+    public Job registerJob(Job job) {
+        if (job == null || job.getId() == null || job.getId().isBlank()) {
+            return null;
+        }
+
+        JobRegisterEvent event = new JobRegisterEvent(job);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return null;
+        }
+
+        jobs.put(job.getId(), job);
+
+        for (Map.Entry<Action, Map<String, Job.ActionReward>> entry : job.getActions().entrySet()) {
+            Action action = entry.getKey();
+            actionJobMap.computeIfAbsent(action, k -> ConcurrentHashMap.newKeySet()).add(job.getId());
+            plugin.ensureActionListener(action);
+        }
+
+        if (plugin.getLeaderboardManager() != null) {
+            plugin.getLeaderboardManager().ensureJobInCache(job);
+        }
+
+        return job;
+    }
+
+    public boolean unregisterJob(String jobId) {
+        if (jobId == null) return false;
+        Job job = jobs.get(jobId);
+        if (job == null) return false;
+
+        JobUnregisterEvent event = new JobUnregisterEvent(job);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        jobs.remove(jobId);
+        for (Set<String> jobSet : actionJobMap.values()) {
+            jobSet.remove(jobId);
+        }
+
+        return true;
+    }
+
+    public Job getJob(String jobId) {
+        if (jobId == null) return null;
+        return jobs.get(jobId);
+    }
+
+    public boolean hasJob(String jobId) {
+        return jobId != null && jobs.containsKey(jobId);
+    }
+
+    public void modifyJob(String jobId, Consumer<Job> modifier) {
+        if (jobId == null || modifier == null) return;
+        Job job = jobs.get(jobId);
+        if (job == null) return;
+
+        modifier.accept(job);
+
+        // Re-index actionJobMap for this job
+        for (Map.Entry<Action, Map<String, Job.ActionReward>> entry : job.getActions().entrySet()) {
+            Action action = entry.getKey();
+            actionJobMap.computeIfAbsent(action, k -> ConcurrentHashMap.newKeySet()).add(job.getId());
+            plugin.ensureActionListener(action);
+        }
+    }
+
+    public void addActionToJob(String jobId, Action action, String value, Job.ActionReward reward) {
+        if (jobId == null || action == null || value == null || reward == null) return;
+        Job job = jobs.get(jobId);
+        if (job == null) return;
+
+        ActionRegistry.register(action);
+        job.addAction(action, value, reward);
+        JobInfoLine infoLine = new JobInfoLine(action, value, reward);
+        job.getInfoLines().add(infoLine);
+
+        actionJobMap.computeIfAbsent(action, k -> ConcurrentHashMap.newKeySet()).add(job.getId());
+        plugin.ensureActionListener(action);
+    }
+
+    public boolean removeActionFromJob(String jobId, Action action, String value) {
+        if (jobId == null || action == null || value == null) return false;
+        Job job = jobs.get(jobId);
+        if (job == null) return false;
+
+        boolean removed = job.removeAction(action, value);
+        if (!job.hasAction(action)) {
+            Set<String> set = actionJobMap.get(action);
+            if (set != null) {
+                set.remove(jobId);
+            }
+        }
+        return removed;
+    }
+
     public Collection<Job> getJobsWithAction(Action action) {
+        if (action == null) return Collections.emptyList();
         return actionJobMap.getOrDefault(action, Collections.emptySet())
                 .stream()
                 .map(jobs::get)
                 .filter(Objects::nonNull)
                 .toList();
+    }
+
+    public void processAction(Player player, Action action, String value, int amount) {
+        if (player == null || action == null || value == null || value.isBlank() || amount <= 0) {
+            return;
+        }
+        if (shouldIgnore(player)) {
+            return;
+        }
+        for (Job job : getJobsWithAction(action)) {
+            processAction(player, action, value, job, amount);
+        }
     }
 
     public void processAction(Player player, Action action, String value, Job job, int amount) {
@@ -174,11 +290,11 @@ public class JobManager {
         Job.ActionReward reward = job.getActionReward(action, value.toLowerCase(Locale.ROOT));
         if (reward == null) return;
 
-        JobExpUtils.processJobExp(player, job, reward, amount);
-
+        JobExpUtils.processJobExp(player, job, action, value, reward, amount);
     }
 
     public boolean shouldIgnore(Player player) {
+        if (player == null) return true;
         if (!plugin.getConfig().isSet("ignored_gamemodes")) return false;
         List<String> ignoredGamemodes = plugin.getConfig().getStringList("ignored_gamemodes");
         return ignoredGamemodes.contains(player.getGameMode().toString());

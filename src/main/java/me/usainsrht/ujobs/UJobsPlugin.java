@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
 import me.usainsrht.ujobs.commands.MainCommand;
+import me.usainsrht.ujobs.listeners.AsyncPlayerPreLoginListener;
 import me.usainsrht.ujobs.listeners.InventoryListener;
 import me.usainsrht.ujobs.listeners.JoinListener;
 import me.usainsrht.ujobs.listeners.QuitListener;
@@ -39,6 +40,7 @@ public final class UJobsPlugin extends JavaPlugin {
     private Economy economy;
     private Storage storage;
     private MorePaperLib morePaperLib;
+    private me.usainsrht.ujobs.api.UJobsAPI api;
 
     // Managers
     private ConfigManager configManager;
@@ -47,6 +49,11 @@ public final class UJobsPlugin extends JavaPlugin {
     private JobGUIManager guiManager;
     private BossBarManager bossBarManager;
     private NPCManager npcManager;
+    private final java.util.Set<me.usainsrht.ujobs.models.Action> registeredActionListeners = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    public static UJobsPlugin getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -63,6 +70,8 @@ public final class UJobsPlugin extends JavaPlugin {
         initializeStorage();
 
         initializeManagers();
+
+        this.api = new me.usainsrht.ujobs.api.UJobsAPIImpl(this);
 
         registerEventsAndCommands();
 
@@ -86,7 +95,6 @@ public final class UJobsPlugin extends JavaPlugin {
             if (storage instanceof PDCStorage pdcStorage) {
                 pdcStorage.saveNowAll();
             }
-            storage.save();
             storage.close();
         }
 
@@ -94,7 +102,6 @@ public final class UJobsPlugin extends JavaPlugin {
             leaderboardManager.save(); //saves to cache (async task submitted)
             leaderboardManager.shutdown(); //waits for async tasks to finish and shuts down
         }
-        if (configManager != null) configManager.saveLeaderboard(); //writes it
 
         // Cancel all boss bars
         if (bossBarManager != null) {
@@ -129,55 +136,14 @@ public final class UJobsPlugin extends JavaPlugin {
     private void registerEventsAndCommands() {
         // Register event listeners
         getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+        getServer().getPluginManager().registerEvents(new AsyncPlayerPreLoginListener(this), this);
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new QuitListener(this), this);
         getServer().getPluginManager().registerEvents(new SaveListener(this), this);
 
-        // job listeners
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.BREAK)) {
-            getServer().getPluginManager().registerEvents(new BreakListener(jobManager), this);
-            if (getServer().getPluginManager().isPluginEnabled("UTimber")) {
-                getServer().getPluginManager().registerEvents(new UTimberListener(jobManager), this);
-            }
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.PLACE)) {
-            getServer().getPluginManager().registerEvents(new PlaceListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.TAME)) {
-            getServer().getPluginManager().registerEvents(new TameListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.BREED)) {
-            getServer().getPluginManager().registerEvents(new BreedListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Entity.KILL)) {
-            getServer().getPluginManager().registerEvents(new KillListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.ENCHANT)) {
-            getServer().getPluginManager().registerEvents(new EnchantListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.FISH)) {
-            getServer().getPluginManager().registerEvents(new FishListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.RAID)) {
-            getServer().getPluginManager().registerEvents(new RaidListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Special.GENERATE_LOOT)) {
-            getServer().getPluginManager().registerEvents(new LootGenerateListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.TRADE)) {
-            getServer().getPluginManager().registerEvents(new TradeListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.ANVIL_MERGE)) {
-            getServer().getPluginManager().registerEvents(new AnvilMergeListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.CRAFT)) {
-            getServer().getPluginManager().registerEvents(new CraftListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.HARVEST)) {
-            getServer().getPluginManager().registerEvents(new HarvestListener(jobManager), this);
-        }
-        if (jobManager.getActionJobMap().containsKey(BuiltInActions.Material.SMELT)) {
-            getServer().getPluginManager().registerEvents(new SmeltListener(jobManager), this);
+        // Register job listeners dynamically
+        for (me.usainsrht.ujobs.models.Action action : jobManager.getActionJobMap().keySet()) {
+            ensureActionListener(action);
         }
 
         LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
@@ -192,6 +158,59 @@ public final class UJobsPlugin extends JavaPlugin {
                     .build();
             commands.register(getPluginMeta(), MainCommand.create(this, mainCommand), mainCommand.getDescription(), mainCommand.getAliases());
         });
+    }
+
+    public void ensureActionListener(me.usainsrht.ujobs.models.Action action) {
+        if (action == null || registeredActionListeners.contains(action)) {
+            return;
+        }
+
+        if (action == BuiltInActions.Material.BREAK) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new BreakListener(jobManager), this);
+            if (getServer().getPluginManager().isPluginEnabled("UTimber")) {
+                getServer().getPluginManager().registerEvents(new UTimberListener(jobManager), this);
+            }
+        } else if (action == BuiltInActions.Material.PLACE) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new PlaceListener(jobManager), this);
+        } else if (action == BuiltInActions.Entity.TAME) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new TameListener(jobManager), this);
+        } else if (action == BuiltInActions.Entity.BREED) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new BreedListener(jobManager), this);
+        } else if (action == BuiltInActions.Entity.KILL) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new KillListener(jobManager), this);
+        } else if (action == BuiltInActions.Special.ENCHANT) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new EnchantListener(jobManager), this);
+        } else if (action == BuiltInActions.Material.FISH) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new FishListener(jobManager), this);
+        } else if (action == BuiltInActions.Special.RAID) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new RaidListener(jobManager), this);
+        } else if (action == BuiltInActions.Special.GENERATE_LOOT) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new LootGenerateListener(jobManager), this);
+        } else if (action == BuiltInActions.Material.TRADE) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new TradeListener(jobManager), this);
+        } else if (action == BuiltInActions.Material.ANVIL_MERGE) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new AnvilMergeListener(jobManager), this);
+        } else if (action == BuiltInActions.Material.CRAFT) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new CraftListener(jobManager), this);
+        } else if (action == BuiltInActions.Material.HARVEST) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new HarvestListener(jobManager), this);
+        } else if (action == BuiltInActions.Material.SMELT) {
+            registeredActionListeners.add(action);
+            getServer().getPluginManager().registerEvents(new SmeltListener(jobManager), this);
+        }
     }
 
     private void setupEconomy() {
