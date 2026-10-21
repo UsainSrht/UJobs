@@ -19,6 +19,17 @@ jobs:
       #chat: ""
       sound: entity.player.levelup
     level_equation: "<next_level>*<next_level>*5"
+    #money earned from this job's actions is multiplied based on the player's level in it.
+    #each entry applies from that level onwards until the next one, below the lowest entry it is 1.0
+    #the example below gives x1.5 money from level 10 and x2 money from level 20
+    #
+    #there is a second multiplier granted by permission: ujobs.multiplier.<value>
+    #for example ujobs.multiplier.2 gives x2, ujobs.multiplier.1.5 gives x1.5.
+    #it applies to every job, the highest node a player has wins, and it stacks with the levels
+    #below, so level 10 here plus ujobs.multiplier.2 pays x3.
+    income_multiplier:
+      #10: 1.5
+      #20: 2.0
     actions:
       kill:
         zombie:

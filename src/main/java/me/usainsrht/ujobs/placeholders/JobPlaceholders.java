@@ -4,6 +4,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.PlayerJobData;
+import me.usainsrht.ujobs.utils.MultiplierUtil;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -53,6 +54,7 @@ public class JobPlaceholders extends PlaceholderExpansion {
     * ujobs_player_exp_<job>                     - Player's exp in the job                              - 1260.8
     * ujobs_player_position_<job>                - Player's position in the job leaderboard             - 12
     * ujobs_player_totalmoney_<job>              - Total amount of money player has gained in the job   - 14179.5
+    * ujobs_player_multiplier_<job>              - Total income multiplier (level x permission)         - 3.0
     *
     * ujobs_leaderboard_name_<job>_<position>    - Player name at position in job leaderboard           - UsainSrht
     * ujobs_leaderboard_level_<job>_<position>   - Player level at position in job leaderboard          - 31
@@ -106,6 +108,9 @@ public class JobPlaceholders extends PlaceholderExpansion {
                 return String.valueOf(position + 1);
             } else if (param[1].equalsIgnoreCase("totalmoney")) {
                 return jobStats != null ? String.valueOf(jobStats.getTotalMoney()) : "0";
+            } else if (param[1].equalsIgnoreCase("multiplier")) {
+                int level = jobStats != null ? jobStats.getLevel() : 0;
+                return String.valueOf(MultiplierUtil.getTotalMultiplier(player.getPlayer(), job, level));
             }
         } else if (param[0].equalsIgnoreCase("leaderboard")) {
             if (param.length < 4) return null;

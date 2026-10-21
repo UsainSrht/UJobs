@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.PlayerJobData;
+import me.usainsrht.ujobs.utils.MultiplierUtil;
 import me.usainsrht.ujobs.utils.ProgressBarUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -94,6 +95,7 @@ public class MainJobGUI implements JobGUI {
             int level = jobStats.getLevel();
             double nextExp = job.calculateExpForLevel(level);
             double totalMoney = jobStats.getTotalMoney();
+            double multiplier = MultiplierUtil.getTotalMultiplier(Bukkit.getPlayer(uuid), job, level);
             String progress = ProgressBarUtil.getProgressBar(exp, nextExp, 25, "", "|", "<color:dark_gray>", "|");
             TextColor primaryColor = job.getFirstColor();
             TextColor secondaryColor = job.getLastColor();
@@ -105,6 +107,7 @@ public class MainJobGUI implements JobGUI {
             placeholderSet.add(Formatter.number("exp", exp));
             placeholderSet.add(Formatter.number("next_exp", nextExp));
             placeholderSet.add(Formatter.number("total_money", totalMoney));
+            placeholderSet.add(Formatter.number("multiplier", multiplier));
             placeholderSet.add(Placeholder.parsed("progress", progress));
             placeholderSet.add(Placeholder.parsed("money_symbol", plugin.getConfig().getString("symbols.money", "$")));
             placeholderSet.add(Placeholder.parsed("exp_symbol", plugin.getConfig().getString("symbols.exp", "xp")));
@@ -165,7 +168,7 @@ public class MainJobGUI implements JobGUI {
             if (e.getClick().isLeftClick()) {
                 new LeaderboardGUI(plugin, viewerUuid).open(player);
             } else if (e.getClick().isRightClick()) {
-                new JobInfoGUI(plugin).open(player);
+                new JobInfoGUI(plugin, viewerUuid).open(player);
             }
         }
     }

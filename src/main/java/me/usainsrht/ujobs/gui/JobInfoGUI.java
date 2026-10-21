@@ -3,6 +3,8 @@ package me.usainsrht.ujobs.gui;
 import me.usainsrht.ujobs.UJobsPlugin;
 import me.usainsrht.ujobs.models.Job;
 import me.usainsrht.ujobs.models.JobInfoLine;
+import me.usainsrht.ujobs.models.PlayerJobData;
+import me.usainsrht.ujobs.utils.MultiplierUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
@@ -31,8 +33,9 @@ public class JobInfoGUI implements JobGUI {
     public static final NamespacedKey minKey = new NamespacedKey("ujobs", "expinfo_min");
     public static final NamespacedKey jobKey = new NamespacedKey("ujobs", "job_id");
 
-    public JobInfoGUI(UJobsPlugin plugin) {
+    public JobInfoGUI(UJobsPlugin plugin, UUID uuid) {
         this.plugin = plugin;
+        this.uuid = uuid;
 
         int rows = (int)Math.ceil(plugin.getJobManager().getJobs().size() / 7f) + 2;
         Component title = plugin.getMiniMessage().deserialize(plugin.getConfig().getString("expinfo.gui.title"));
@@ -117,6 +120,11 @@ public class JobInfoGUI implements JobGUI {
         int maxTop = job.getInfoLines().size();
         int minMax = Math.max(1, maxTop - listAmount);
 
+        // Viewer's own level in this job, so the listed money is what they personally earn.
+        // Read here rather than in the constructor so scrolling (which rebuilds the item) keeps it.
+        int viewerLevel = getViewerLevel(jobId);
+        double multiplier = MultiplierUtil.getTotalMultiplier(getViewer(), job, viewerLevel);
+
         // Check bounds of min
         if (min < 1) {
             min = 1;
@@ -160,7 +168,7 @@ public class JobInfoGUI implements JobGUI {
             JobInfoLine line = job.getInfoLines().get(r);
 
             double exp = line.getReward().getExp();
-            double money = line.getReward().getMoney();
+            double money = line.getReward().getMoney() * multiplier;
 
             placeholderSet.add(Placeholder.component(s + "_action_value", line.getActionValue()));
             placeholderSet.add(Formatter.number(s + "_money", money));
@@ -168,6 +176,8 @@ public class JobInfoGUI implements JobGUI {
         }
 
         // GUI viewer placeholders
+        placeholderSet.add(Formatter.number("level", viewerLevel));
+        placeholderSet.add(Formatter.number("multiplier", multiplier));
         placeholderSet.add(Placeholder.parsed("min", String.valueOf(min)));
         placeholderSet.add(Placeholder.parsed("max", String.valueOf((min + listAmount) - 1)));
 
@@ -194,6 +204,24 @@ public class JobInfoGUI implements JobGUI {
 
         itemStack.setItemMeta(meta);
         return itemStack;
+    }
+
+    /**
+     * Viewer's level in the given job, or 0 when their data is not loaded. Level 0 yields the
+     * multiplier a brand new player has, so the item degrades to base rates rather than failing.
+     */
+    /** Viewer as an online player, or null when unknown/offline. */
+    private Player getViewer() {
+        return uuid != null ? Bukkit.getPlayer(uuid) : null;
+    }
+
+    private int getViewerLevel(String jobId) {
+        if (uuid == null) return 0;
+        PlayerJobData playerJobData = plugin.getStorage().getCached(uuid);
+        if (playerJobData == null) return 0;
+        // read the map directly; getJobStats(id) would insert an empty entry for every job listed
+        PlayerJobData.JobStats stats = playerJobData.getJobStats().get(jobId);
+        return stats != null ? stats.getLevel() : 0;
     }
 
     public void open(Player player) {

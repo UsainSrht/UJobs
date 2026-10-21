@@ -89,7 +89,12 @@ public class JobManager {
         // Load boss bar config
         Job.BossBarConfig bossBarConfig = loadBossBarConfig(jobSection.getConfigurationSection("bossbar"));
 
-        Job job = new Job(jobId, name, icon, levelEquation, levelUpMessage, levelUpCommands, bossBarConfig);
+        // Load income (money) multipliers per level
+        NavigableMap<Integer, Double> incomeMultipliers = loadIncomeMultipliers(jobId,
+                jobSection.getConfigurationSection("income_multiplier"));
+
+        Job job = new Job(jobId, name, icon, levelEquation, levelUpMessage, levelUpCommands, bossBarConfig,
+                incomeMultipliers);
 
         // Load actions
         ConfigurationSection actionsSection = jobSection.getConfigurationSection("actions");
@@ -98,6 +103,30 @@ public class JobManager {
         }
 
         return job;
+    }
+
+    private NavigableMap<Integer, Double> loadIncomeMultipliers(String jobId, ConfigurationSection multiplierSection) {
+        NavigableMap<Integer, Double> multipliers = new TreeMap<>();
+        if (multiplierSection == null) return multipliers;
+
+        for (String levelKey : multiplierSection.getKeys(false)) {
+            int level;
+            try {
+                level = Integer.parseInt(levelKey.trim());
+            } catch (NumberFormatException e) {
+                plugin.getLogger().warning("Invalid income_multiplier level for job " + jobId + ": " + levelKey);
+                continue;
+            }
+            double multiplier = multiplierSection.getDouble(levelKey, 1.0);
+            if (multiplier < 0) {
+                plugin.getLogger().warning("Negative income_multiplier for job " + jobId + " at level " + level
+                        + ", ignoring it.");
+                continue;
+            }
+            multipliers.put(level, multiplier);
+        }
+
+        return multipliers;
     }
 
     private Job.BossBarConfig loadBossBarConfig(ConfigurationSection bossBarSection) {

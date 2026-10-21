@@ -65,6 +65,9 @@ public class JobExpUtils {
             handleLevelUp(player, job, newLevel);
         }
 
+        // Apply the level based and permission based income multipliers
+        moneyGain *= MultiplierUtil.getTotalMultiplier(player, job, newLevel);
+
         // Add money
         if (moneyGain > 0 && plugin.getEconomy() != null) {
             plugin.getEconomy().depositPlayer(player, moneyGain);
